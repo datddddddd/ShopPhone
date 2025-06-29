@@ -1,0 +1,25 @@
+﻿@model List<ShopPhone.Models.HangHoa>
+
+<h3>Kết quả tìm kiếm</h3>
+@if (!Model.Any())
+{
+    <p>Không tìm thấy sản phẩm phù hợp.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <img src="~/images/@item.Hinh" class="card-img-top" alt="@item.TenHH" />
+                    <div class="card-body">
+                        <h5 class="card-title">@item.TenHH</h5>
+                        <p class="card-text text-danger">@item.DonGia?.ToString("N0") đ</p>
+                        <a href="/Product/Detail/@item.MaHH" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

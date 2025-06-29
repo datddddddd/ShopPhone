@@ -1,0 +1,206 @@
+﻿@model ShopPhone.Models.GioHangDb
+
+@if (TempData["ThongBao"] != null)
+{
+    <div class="alert alert-success text-center fw-bold">
+        @Html.Raw(TempData["ThongBao"])
+    </div>
+}
+
+<h2 class="text-primary mb-4"><i class="bi bi-cart"></i> Giỏ hàng của bạn</h2>
+
+<div class="row">
+    <!-- DANH SÁCH SẢN PHẨM -->
+    <div class="col-md-8">
+        @foreach (var item in Model.ChiTietGioHang)
+        {
+            var donGia = item.DonGia ?? 0m;
+            var giamPhanTram = item.HangHoa.GiamGia ?? 0m;
+            var giamTien = donGia * giamPhanTram / 100;
+            var soLuong = item.SoLuong;
+            var thanhTien = (donGia - giamTien) * soLuong;
+
+            <div class="card mb-4 shadow-sm rounded-3">
+                <div class="card-body d-flex flex-wrap align-items-center gap-3">
+                    <!-- ẢNH -->
+                    <div>
+                        <img src="@Url.Content("~/images/" + item.HangHoa.Hinh)"
+                             alt="@item.HangHoa.TenHH"
+                             class="rounded"
+                             width="120"
+                             style="object-fit: cover;" />
+                    </div>
+
+                    <!-- THÔNG TIN -->
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold">@item.HangHoa.TenHH</h5>
+                        <p class="text-danger fs-5 mb-1">@donGia.ToString("N0") đ</p>
+
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <label class="me-2">Số lượng:</label>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    onclick="thayDoiSoLuong(@item.Id, -1)">
+                                −
+                            </button>
+
+                            <span id="soLuong-@item.Id" class="fw-bold">@soLuong</span>
+
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    onclick="thayDoiSoLuong(@item.Id, 1)">
+                                +
+                            </button>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="fw-bold">Chọn gói bảo hành:</small>
+
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="bh1-@item.Id"
+                                       onchange="chonBaoHanh(@item.Id, @item.SoLuong)" />
+                                <label class="form-check-label" for="bh1-@item.Id">+990.000 đ / năm</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="bh2-@item.Id"
+                                       onchange="chonBaoHanh(@item.Id, @item.SoLuong)" />
+                                <label class="form-check-label" for="bh2-@item.Id">Premium +1.300.000 đ</label>
+                            </div>
+                        </div>
+
+                        <p class="fw-bold text-primary mb-0">Thành tiền: @thanhTien.ToString("N0") đ</p>
+                    </div>
+                    <!-- NÚT XÓA -->
+                    <div>
+                        <form asp-action="Xoa" method="post">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button class="btn btn-outline-danger btn-sm">Xóa</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- THÔNG TIN ĐƠN HÀNG -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-light fw-bold">
+                <i class="bi bi-receipt"></i> Thông tin đơn hàng
+            </div>
+            <div class="card-body">
+                @{
+                    var tongTien = Model.ChiTietGioHang
+                    .Sum(x => (x.DonGia ?? 0) * x.SoLuong);
+
+                    var tongGiam = Model.ChiTietGioHang
+                    .Sum(x => ((x.DonGia ?? 0) * (x.HangHoa.GiamGia ?? 0) / 100) * x.SoLuong);
+
+                    var canThanhToan = tongTien - tongGiam;
+                }
+
+
+
+<p class="mb-1 text-muted"><del id="tongTien">@tongTien.ToString("N0") đ</del></p>
+<p class="text-success fw-semibold" id="tongGiam">Tiết kiệm: @tongGiam.ToString("N0") đ</p>
+                <p class="fw-bold">Khuyến mãi:</p>
+                <ul id="khuyenMai" class="mb-2">
+                    @foreach (var item in Model.ChiTietGioHang)
+                    {
+                        if ((item.HangHoa.GiamGia ?? 0) > 0)
+                        {
+                            var donGia = item.DonGia ?? 0m;
+                            var phanTram = item.HangHoa.GiamGia ?? 0;
+                            var soLuong = item.SoLuong;
+                            var giamTien = donGia * phanTram / 100 * soLuong;
+
+                            <li>
+                                @item.HangHoa.TenHH: Giảm @phanTram% x @soLuong =
+                                @giamTien.ToString("N0") đ
+                            </li>
+                        }
+                    }
+                </ul>
+
+
+                <hr />
+                <p class="fs-5 fw-bold text-danger" id="canThanhToan">Cần thanh toán: @canThanhToan.ToString("N0") đ</p>
+                <button class="btn btn-danger w-100 mt-2">
+                    <i class="bi bi-check-circle"></i> Xác nhận đơn
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function formatVN(v) {
+        return (+v).toLocaleString('vi-VN') + ' đ';
+    }
+
+    function thayDoiSoLuong(id, delta) {
+        const span = document.getElementById(`soLuong-${id}`);
+        let current = parseInt(span.innerText);
+        const newQty = current + delta;
+        if (newQty < 1) return;
+
+        fetch('/GioHang/CapNhatSoLuong', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document
+                    .querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ id: id, soLuong: newQty })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return alert("Cập nhật thất bại!");
+            span.innerText = newQty;
+
+            // cập nhật giá trị tổng bên phải
+            document.getElementById("tongTien").innerHTML = `<del>${formatVN(data.tongTien)}</del>`;
+            document.getElementById("tongGiam").innerText = `Tiết kiệm: ${formatVN(data.tongGiam)}`;
+            document.getElementById("canThanhToan").innerText = `Cần thanh toán: ${formatVN(data.canThanhToan)}`;
+            document.getElementById("khuyenMai").innerHTML = data.htmlKM;
+        })
+        .catch(() => alert("Không thể kết nối đến server"));
+    }
+</script>
+<script>
+    function chonBaoHanh(id, soLuong) {
+        const bh1 = document.getElementById(`bh1-${id}`).checked;
+        const bh2 = document.getElementById(`bh2-${id}`).checked;
+
+        fetch('/GioHang/CapNhatBaoHanh', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document
+                    .querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({
+                id: id,
+                baoHanh1: bh1,
+                baoHanh2: bh2,
+                soLuong: soLuong
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return alert("Cập nhật thất bại!");
+
+            document.getElementById("tongTien").innerHTML = `<del>${formatVN(data.tongTien)}</del>`;
+            document.getElementById("tongGiam").innerText = `Tiết kiệm: ${formatVN(data.tongGiam)}`;
+            document.getElementById("canThanhToan").innerText = `Cần thanh toán: ${formatVN(data.canThanhToan)}`;
+    document.getElementById("khuyenMai").innerHTML = data.htmlKM;
+            })
+        .catch(() => alert("Lỗi kết nối đến server"));
+    }
+
+    function formatVN(v) {
+        return (+v).toLocaleString('vi-VN') + ' đ';
+    }
+</script>

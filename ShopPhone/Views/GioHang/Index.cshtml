@@ -1,11 +1,17 @@
 ﻿@model ShopPhone.Models.GioHangDb
 
+<form id="antiForgeryForm" method="post">
+    @Html.AntiForgeryToken()
+</form>
+
+
 @if (TempData["ThongBao"] != null)
 {
-    <div class="alert alert-success text-center fw-bold">
-        @Html.Raw(TempData["ThongBao"])
+    <div class="alert alert-warning fw-bold text-center">
+        @TempData["ThongBao"]
     </div>
 }
+
 
 <h2 class="text-primary mb-4"><i class="bi bi-cart"></i> Giỏ hàng của bạn</h2>
 
@@ -71,7 +77,9 @@
                             </div>
                         </div>
 
-                        <p class="fw-bold text-primary mb-0">Thành tiền: @thanhTien.ToString("N0") đ</p>
+                        <p class="fw-bold text-primary mb-0">
+                            Thành tiền: <span id="thanhTien-@item.Id">@thanhTien.ToString("N0")</span> đ
+                        </p>
                     </div>
                     <!-- NÚT XÓA -->
                     <div>
@@ -110,27 +118,49 @@
                 <ul id="khuyenMai" class="mb-2">
                     @foreach (var item in Model.ChiTietGioHang)
                     {
-                        if ((item.HangHoa.GiamGia ?? 0) > 0)
-                        {
-                            var donGia = item.DonGia ?? 0m;
-                            var phanTram = item.HangHoa.GiamGia ?? 0;
-                            var soLuong = item.SoLuong;
-                            var giamTien = donGia * phanTram / 100 * soLuong;
+                        var soLuong = item.SoLuong;
+                        var donGia = item.DonGia ?? 0m;
+                        var phanTram = item.HangHoa.GiamGia ?? 0m;
 
+                        // Giảm giá
+                        if (phanTram > 0)
+                        {
+                            var giamTien = donGia * phanTram / 100 * soLuong;
                             <li>
-                                @item.HangHoa.TenHH: Giảm @phanTram% x @soLuong =
-                                @giamTien.ToString("N0") đ
+                                @item.HangHoa.TenHH: Giảm @phanTram% × @soLuong = @giamTien.ToString("N0") đ
+                            </li>
+                        }
+
+                        // Bảo hành thường
+                        if (item.BaoHanh1)
+                        {
+                            var bh1 = 990_000 * soLuong;
+                            <li>
+                                @item.HangHoa.TenHH: Bảo hành +990.000 đ × @soLuong = @bh1.ToString("N0") đ
+                            </li>
+                        }
+
+                        // Bảo hành premium
+                        if (item.BaoHanh2)
+                        {
+                            var bh2 = 1_300_000 * soLuong;
+                            <li>
+                                @item.HangHoa.TenHH: Bảo hành Premium +1.300.000 đ × @soLuong = @bh2.ToString("N0") đ
                             </li>
                         }
                     }
                 </ul>
 
 
+
                 <hr />
                 <p class="fs-5 fw-bold text-danger" id="canThanhToan">Cần thanh toán: @canThanhToan.ToString("N0") đ</p>
-                <button class="btn btn-danger w-100 mt-2">
-                    <i class="bi bi-check-circle"></i> Xác nhận đơn
-                </button>
+                <form asp-controller="DonHang" asp-action="XacNhanDon" method="post">
+                    <button type="submit" class="btn btn-danger w-100 mt-2">
+                        <i class="bi bi-check-circle"></i> Xác nhận đơn
+                    </button>
+                </form>
+
             </div>
         </div>
     </div>
@@ -140,27 +170,27 @@
         return (+v).toLocaleString('vi-VN') + ' đ';
     }
 
-    function thayDoiSoLuong(id, delta) {
+        function thayDoiSoLuong(id, delta) {
         const span = document.getElementById(`soLuong-${id}`);
         let current = parseInt(span.innerText);
         const newQty = current + delta;
         if (newQty < 1) return;
 
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("soLuong", newQty);
+        formData.append("__RequestVerificationToken", token);
+
         fetch('/GioHang/CapNhatSoLuong', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document
-                    .querySelector('input[name="__RequestVerificationToken"]').value
-            },
-            body: JSON.stringify({ id: id, soLuong: newQty })
+            body: formData
         })
         .then(res => res.json())
         .then(data => {
             if (!data.success) return alert("Cập nhật thất bại!");
             span.innerText = newQty;
-
-            // cập nhật giá trị tổng bên phải
+            document.getElementById(`thanhTien-${id}`).innerText = formatVN((data.tongTien - data.tongGiam));
             document.getElementById("tongTien").innerHTML = `<del>${formatVN(data.tongTien)}</del>`;
             document.getElementById("tongGiam").innerText = `Tiết kiệm: ${formatVN(data.tongGiam)}`;
             document.getElementById("canThanhToan").innerText = `Cần thanh toán: ${formatVN(data.canThanhToan)}`;
@@ -168,39 +198,46 @@
         })
         .catch(() => alert("Không thể kết nối đến server"));
     }
+
+    
 </script>
+
 <script>
-    function chonBaoHanh(id, soLuong) {
+    function chonBaoHanh(id) {
+        // Lấy trạng thái hiện tại của 2 ô bảo hành
         const bh1 = document.getElementById(`bh1-${id}`).checked;
         const bh2 = document.getElementById(`bh2-${id}`).checked;
+
+        // 🚩 Lấy lại số lượng thực tế trên giao diện thay vì dùng tham số cũ
+        const soLuong = parseInt(document.getElementById(`soLuong-${id}`).innerText);
 
         fetch('/GioHang/CapNhatBaoHanh', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'RequestVerificationToken': document
-                    .querySelector('input[name="__RequestVerificationToken"]').value
+                'RequestVerificationToken':
+                    document.querySelector('input[name="__RequestVerificationToken"]').value
             },
             body: JSON.stringify({
                 id: id,
                 baoHanh1: bh1,
                 baoHanh2: bh2,
-                soLuong: soLuong
+                soLuong: soLuong          // 👈 luôn gửi số lượng mới nhất
             })
         })
         .then(res => res.json())
         .then(data => {
             if (!data.success) return alert("Cập nhật thất bại!");
 
-            document.getElementById("tongTien").innerHTML = `<del>${formatVN(data.tongTien)}</del>`;
-            document.getElementById("tongGiam").innerText = `Tiết kiệm: ${formatVN(data.tongGiam)}`;
-            document.getElementById("canThanhToan").innerText = `Cần thanh toán: ${formatVN(data.canThanhToan)}`;
-    document.getElementById("khuyenMai").innerHTML = data.htmlKM;
-            })
+            // Cập nhật lại UI
+            document.getElementById(`thanhTien-${id}`).innerText =
+                  formatVN(data.thanhTienItem);          // giá từng dòng
+            document.getElementById("tongTien").innerHTML   = `<del>${formatVN(data.tongTien)}</del>`;
+            document.getElementById("tongGiam").innerText   = `Tiết kiệm: ${formatVN(data.tongGiam)}`;
+            document.getElementById("canThanhToan").innerText =
+                  `Cần thanh toán: ${formatVN(data.canThanhToan)}`;
+            document.getElementById("khuyenMai").innerHTML  = data.htmlKM;
+        })
         .catch(() => alert("Lỗi kết nối đến server"));
-    }
-
-    function formatVN(v) {
-        return (+v).toLocaleString('vi-VN') + ' đ';
     }
 </script>

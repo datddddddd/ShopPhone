@@ -6,6 +6,23 @@
 
 <h2 class="text-danger fw-bold mb-4">Thêm Sản Phẩm</h2>
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>❌ Có lỗi khi thêm sản phẩm:</strong>
+        <ul>
+            @foreach (var entry in ViewData.ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+
 @* Hiển thị lỗi tổng quát *@
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
@@ -45,9 +62,11 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Hinh">Hình ảnh chính</label>
-        <input type="file" name="Hinh" class="form-control" />
+        <label asp-for="FileHinh">Hình ảnh chính</label>
+        <input asp-for="FileHinh" type="file" class="form-control" />
+        <span asp-validation-for="FileHinh" class="text-danger"></span>
     </div>
+
 
     <div class="form-group">
         <label asp-for="NgaySX">Ngày Sản Xuất</label>
@@ -89,15 +108,20 @@
         </div>
     </div>
 
+    <!-- Hình mở hộp -->
     <div class="form-group">
-        <label asp-for="HinhMoHop">Hình mở hộp</label>
-        <input type="file" name="HinhMoHop" class="form-control" />
+        <label asp-for="FileHinhMoHop">Hình mở hộp</label>
+        <input asp-for="FileHinhMoHop" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhMoHop" class="text-danger"></span>
     </div>
 
+    <!-- Hình thực tế -->
     <div class="form-group">
-        <label asp-for="HinhThucTe">Hình thực tế</label>
-        <input type="file" name="HinhThucTe" class="form-control" />
+        <label asp-for="FileHinhThucTe">Hình thực tế</label>
+        <input asp-for="FileHinhThucTe" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhThucTe" class="text-danger"></span>
     </div>
+
 
     <div class="form-group">
         <label asp-for="VideoId">Video ID</label>

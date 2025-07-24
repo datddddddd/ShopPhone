@@ -46,64 +46,32 @@
     </div>
 </div>
 
-<!-- Đặt section Scripts sau phần HTML -->
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/spritespin@4.0.11/release/spritespin.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spritespin@4.0.11/release/spritespin.min.css">
-
     <script>
         $(document).ready(function () {
-            const totalFrames = 20;
-            const basePath = "/images/360/";
-            const imageFiles = [];
-
-            for (let i = 1; i <= totalFrames; i++) {
-                const filename = `ip${String(i).padStart(2, '0')}.jpg`;
-                imageFiles.push(basePath + filename);
-            }
+            const cdnImages = [
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/0.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/1.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/2.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/3.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/4.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/5.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/6.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/7.png"
+            ];
 
             $("#viewer360").spritespin({
-                source: imageFiles,
+                source: cdnImages,
                 width: 600,
                 height: 400,
                 frameTime: 60,
-                animate: false,
                 sense: -1,
-                responsive: true,
+                animate: false,
+                loop: false,
                 plugins: ["drag"]
             });
         });
     </script>
 }
-<style>
-    .intro-section {
-        background-color: #fff5f5;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        animation: fadeInUp 0.8s ease-in-out;
-    }
 
-    .intro-icon {
-        color: #d90429;
-        margin-right: 8px;
-    }
-
-    .highlight {
-        color: #d90429;
-        font-weight: bold;
-    }
-
-    @@keyframes fadeInUp {
-        from{
-        opacity: 0;
-        transform: translateY(40px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-</style>

@@ -50,10 +50,12 @@ namespace ShopPhone.Controllers
             }
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, user.HoTen),
-        new Claim(ClaimTypes.Role, user.VaiTro)
-    };
+{
+    new Claim(ClaimTypes.Name, user.Email),
+    new Claim(ClaimTypes.Role, user.VaiTro),
+    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // <- thêm dòng này
+};
+
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);

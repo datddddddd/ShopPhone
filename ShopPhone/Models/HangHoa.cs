@@ -11,7 +11,7 @@ namespace ShopPhone.Models
 
         [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
         public string TenHH { get; set; }
-        public string TenAlias { get; set; }
+        public string? TenAlias { get; set; }
         public int MaLoai { get; set; }
         public string MoTaDonVi { get; set; }
 
@@ -24,15 +24,24 @@ namespace ShopPhone.Models
         [DataType(DataType.Date)]
         public DateTime NgaySX { get; set; }
 
-        public int SoLanXem { get; set; }
-        public string MoTa { get; set; }
-        public string MaNCC { get; set; }    // nvarchar trong SQL
+        public int? SoLanXem { get; set; }
+        public string? MoTa { get; set; }
+        public string? MaNCC { get; set; }    
         public double? DanhGia { get; set; }
         public string? HinhMoHop { get; set; }
         public string? HinhThucTe { get; set; }
-        public string VideoId { get; set; }
+        public string? VideoId { get; set; }
 
         /* ---------- Thuộc tính tính toán ---------- */
+        [NotMapped]
+        public IFormFile? FileHinh { get; set; }
+
+
+        [NotMapped]
+        public IFormFile? FileHinhMoHop { get; set; }
+
+        [NotMapped]
+        public IFormFile? FileHinhThucTe { get; set; }
 
         /// <summary>Giá gốc suy ngược từ DonGia và % giảm.</summary>
         [NotMapped]

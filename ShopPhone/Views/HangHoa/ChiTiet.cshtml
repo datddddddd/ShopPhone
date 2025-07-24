@@ -23,10 +23,11 @@
                     </div>
                 </div>
                 <div class="tab-pane fade" id="unbox" role="tabpanel">
-                    <img src="@Model.HinhMoHop" class="img-fluid rounded" alt="Ảnh mở hộp" />
+<img src="@Url.Content("~/images/" + Model.HinhMoHop)" class="img-fluid rounded" alt="Ảnh mở hộp" />
                 </div>
                 <div class="tab-pane fade" id="real" role="tabpanel">
-                    <img src="@Model.HinhThucTe" class="img-fluid rounded" alt="Ảnh thực tế" />
+                    <img src="@Url.Content("~/images/" + Model.HinhThucTe)" class="img-fluid rounded" alt="Ảnh thực tế" />
+
                 </div>
             </div>
         </div>
@@ -65,7 +66,7 @@
     <p><strong>Đơn vị:</strong> @Model.MoTaDonVi</p>
     <p><strong>Sản xuất:</strong> @Model.NgaySX.ToString("dd/MM/yyyy")</p>
     <p><strong>Lượt xem:</strong> @Model.SoLanXem</p>
-<p class="text-muted"><strong>Mô tả ngắn:</strong> @Model.MoTa</p>
+    <p class="text-muted"><strong>Mô tả ngắn:</strong> @Model.MoTa</p>
     <a class="btn btn-danger">Mua ngay</a>
     <a class="btn btn-outline-primary ms-2">Trả góp 0%</a>
 </div>

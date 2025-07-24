@@ -1,0 +1,94 @@
+﻿@model List<ShopPhone.Models.ChiTietDonHang>
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    var dh = ViewBag.DonHang as ShopPhone.Models.DonHang;
+}
+
+<div class="text-center mt-4">
+    <h2 class="text-success"><i class="bi bi-check-circle"></i> Cảm ơn bạn đã đặt hàng!</h2>
+    <p class="mt-3">Mã đơn hàng: <strong>@dh.DonHangId</strong></p>
+    <p>Khách hàng: <strong>@dh.TenDangNhap</strong></p>
+    <p>Ngày đặt: @dh.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+    <p>Tổng tiền: <strong>@dh.TongTien.ToString("N0") ₫</strong></p>
+</div>
+
+<hr />
+
+<h4>Chi tiết đơn hàng</h4>
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.HangHoa?.TenHH</td>
+                <td>
+                    <strong>@(item.DonGia?.ToString("N0") ?? "0") ₫</strong><br />
+                    <small class="text-muted">
+                        Giá gốc: @item.DonGiaGoc.ToString("N0") ₫
+                        @if (item.BaoHanh1)
+                        {
+                            <span> + BH thường</span>
+                        }
+                        @if (item.BaoHanh2)
+                        {
+                            <span> + BH Premium</span>
+                        }
+                        @if (item.GiamGia > 0)
+                        {
+                            <span> - @item.GiamGia.ToString("0")%</span>
+                           
+                        }
+
+                    </small>
+                </td>
+                <td>@item.SoLuong</td>
+                @{
+                    // Tính đúng "giá sau giảm"
+                    var giaGoc = item.DonGiaGoc;
+                    var giam = giaGoc * item.GiamGia / 100;
+                    var giaSauGiam = giaGoc - giam;
+
+                    // Thành tiền thật: giá sau giảm × số lượng
+                    var thanhTienThucTe = giaSauGiam * item.SoLuong;
+                }
+                <td>@thanhTienThucTe.ToString("N0") ₫</td>
+            </tr>
+
+            @* ➕ THÊM hàng phụ nếu có bảo hành hoặc giảm giá *@
+            @if (item.BaoHanh1 || item.BaoHanh2 || item.GiamGia > 0)
+            {
+                <tr>
+                    <td colspan="4">
+                        <small class="text-muted">
+                            @if (item.BaoHanh1)
+                            {
+                                <div>✔ Đã chọn bảo hành thường (+990.000 ₫)</div>
+                            }
+                            @if (item.BaoHanh2)
+                            {
+                                <div>✔ Đã chọn bảo hành Premium (+1.300.000 ₫)</div>
+                            }
+                            @if (item.GiamGia > 0)
+                            {
+                                <div>✔ Giảm giá: @item.GiamGia.ToString("0")%</div>
+                                
+                            }
+
+                        </small>
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+<a href="/" class="btn btn-primary mt-3">🔙 Về trang chủ</a>

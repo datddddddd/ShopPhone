@@ -1,4 +1,6 @@
-﻿namespace ShopPhone.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ShopPhone.Models
 {
     public class TaiKhoan
     {
@@ -9,5 +11,10 @@
         public string Email { get; set; } = null!;
         public DateTime NgayTao { get; set; } = DateTime.Now;
         public string HoTen { get; set; } = null!;
+        [NotMapped]
+        public IFormFile? FileAnhDaiDien { get; set; }
+
+        public string? AnhDaiDien { get; set; }  
+
     }
 }

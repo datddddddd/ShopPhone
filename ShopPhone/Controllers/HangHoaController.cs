@@ -54,7 +54,7 @@ public class HangHoaController : Controller
             GiamGia = hanghoa.GiamGia ??0,
             Hinh = hanghoa.Hinh,
             NgaySX = hanghoa.NgaySX,
-            SoLanXem = hanghoa.SoLanXem,
+            SoLanXem = hanghoa.SoLanXem ?? 0,
             MoTa = hanghoa.MoTa,
             DanhGia = (float)(hanghoa.DanhGia ?? 0.0),
             HinhMoHop = hanghoa.HinhMoHop,

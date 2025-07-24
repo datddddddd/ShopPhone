@@ -55,25 +55,42 @@ namespace ShopPhone.Controllers
         public async Task<IActionResult> ThemVaoGio([FromBody] ThemVaoGioModel model)
         {
             var userName = User.Identity.Name;
-            if (userName == null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
             {
                 return Json(new { success = false, message = "Bạn cần đăng nhập." });
             }
 
-            var gioHang = await _context.GioHangDb.FirstOrDefaultAsync(x => x.TenDangNhap == userName);
+            // ✔ Tìm giỏ hàng theo userId chứ KHÔNG chỉ theo userName
+            var gioHang = await _context.GioHangDb.FirstOrDefaultAsync(x => x.MaNguoiDung == userId);
+
             if (gioHang == null)
             {
-                gioHang = new GioHangDb { TenDangNhap = userName, NgayTao = DateTime.Now };
+                gioHang = new GioHangDb
+                {
+                    MaNguoiDung = userId,      // ✔ Thêm dòng này
+                    TenDangNhap = userName,   // ✔ Cũng giữ dòng này nếu bạn vẫn hiển thị tên
+                    NgayTao = DateTime.Now
+                };
                 _context.GioHangDb.Add(gioHang);
                 await _context.SaveChangesAsync();
             }
 
             var chiTiet = await _context.GioHangChiTietDb
-                .FirstOrDefaultAsync(x => x.GioHangDbId == gioHang.Id && x.MaHH == model.MaHH);
+                .FirstOrDefaultAsync(x =>
+    x.GioHangDbId == gioHang.Id &&
+    x.MaHH == model.MaHH &&
+    x.BaoHanh1 == model.BaoHanh1 &&
+    x.BaoHanh2 == model.BaoHanh2
+);
+
 
             if (chiTiet != null)
             {
                 chiTiet.SoLuong += model.SoLuong;
+                chiTiet.BaoHanh1 = model.BaoHanh1;
+                chiTiet.BaoHanh2 = model.BaoHanh2;
             }
             else
             {
@@ -84,7 +101,9 @@ namespace ShopPhone.Controllers
                     MaHH = model.MaHH,
                     SoLuong = model.SoLuong,
                     DonGia = hang.DonGia ?? 0,
-                    GiamGia = 0
+                    GiamGia = 0,
+                    BaoHanh1 = model.BaoHanh1,
+                    BaoHanh2 = model.BaoHanh2
                 };
                 _context.GioHangChiTietDb.Add(chiTiet);
             }
@@ -92,6 +111,7 @@ namespace ShopPhone.Controllers
             await _context.SaveChangesAsync();
             return Json(new { success = true, message = "Đã thêm vào giỏ hàng!" });
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Xoa(int id)
@@ -115,7 +135,7 @@ namespace ShopPhone.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CapNhatSoLuong([FromBody] CapNhatSoLuongVM model)
+        public async Task<IActionResult> CapNhatSoLuong([FromForm] CapNhatSoLuongVM model)
         {
             // 1) Tìm dòng chi tiết
             var chiTiet = await _context.GioHangChiTietDb
@@ -181,17 +201,22 @@ namespace ShopPhone.Controllers
 
             if (chiTiet == null) return Json(new { success = false });
 
+            // Gán lại thông tin bảo hành vào chi tiết giỏ hàng
+            chiTiet.BaoHanh1 = model.BaoHanh1;
+            chiTiet.BaoHanh2 = model.BaoHanh2;
+
             // Tính tiền bảo hành
             decimal tienBH = 0;
             if (model.BaoHanh1) tienBH += 990_000;
             if (model.BaoHanh2) tienBH += 1_300_000;
 
-            // Gán lại đơn giá: giá sản phẩm đã giảm + giá bảo hành (x số lượng)
+            // Gán lại đơn giá
             var donGiaSanPham = chiTiet.HangHoa.DonGia ?? 0;
             chiTiet.SoLuong = model.SoLuong;
             chiTiet.DonGia = donGiaSanPham + tienBH;
 
             await _context.SaveChangesAsync();
+
 
             // Tính lại toàn bộ giỏ hàng
             var gio = await _context.GioHangDb
@@ -221,11 +246,17 @@ namespace ShopPhone.Controllers
                     htmlKM.Append($"<li><strong>{ct.HangHoa.TenHH}:</strong> Giảm {giam:0.#}% x {ct.SoLuong} = {giamTien:N0} đ</li>");
                 }
 
-                var tienBaoHanh = (donGiaThucTe - donGiaGoc);
-                if (tienBaoHanh > 0)
+                var tienBH1SP = donGiaThucTe - donGiaGoc;
+                var tienBHTong = tienBH1SP * ct.SoLuong;
+
+                if (tienBH1SP > 0)
                 {
-                    htmlKM.Append($"<li><strong>{ct.HangHoa.TenHH}:</strong> Bảo hành +{tienBaoHanh:N0} đ</li>");
+                    htmlKM.Append($@"
+        <li><strong>{ct.HangHoa.TenHH}:</strong>
+        Bảo hành +{tienBH1SP:N0} đ × {ct.SoLuong} = {tienBHTong:N0} đ</li>
+    ");
                 }
+
             }
 
 

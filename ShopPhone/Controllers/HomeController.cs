@@ -78,7 +78,27 @@ namespace ShopPhone.Controllers
 
             return View(vm);
         }
-        
+        [Authorize(Roles = "Admin")]
+        public IActionResult QuanLyDonHang()
+        {
+            var dsDon = _context.DonHang
+                .Include(d => d.ChiTietDonHang)
+                .ThenInclude(c => c.HangHoa)
+                .ToList();
+
+            return View(dsDon);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult DanhSachLienHe()
+        {
+            var danhSachLienHe = _context.LienHe
+                .OrderByDescending(lh => lh.NgayGui)
+                .ToList();
+
+            return View(danhSachLienHe);
+        }
 
         public IActionResult Privacy()
         {
@@ -157,7 +177,7 @@ namespace ShopPhone.Controllers
                 if (sp == null)
                     return NotFound();
 
-                // Cập nhật các trường cần thiết
+                // Cập nhật thông tin cơ bản
                 sp.TenHH = hangHoa.TenHH;
                 sp.TenAlias = hangHoa.TenAlias;
                 sp.MoTa = hangHoa.MoTa;
@@ -169,28 +189,126 @@ namespace ShopPhone.Controllers
                 sp.VideoId = hangHoa.VideoId;
                 sp.MoTaDonVi = hangHoa.MoTaDonVi;
 
-                // Xử lý ảnh nếu có
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                Directory.CreateDirectory(path); // đảm bảo thư mục tồn tại
+
+                // Xử lý ảnh chính
                 if (Hinh != null && Hinh.Length > 0)
                 {
-                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
                     var fileName = Path.GetFileName(Hinh.FileName);
                     var fullPath = Path.Combine(path, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        await Hinh.CopyToAsync(stream);
-                    }
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    await Hinh.CopyToAsync(stream);
                     sp.Hinh = fileName;
                 }
 
+                // Ảnh mở hộp
+                if (hangHoa.FileHinhMoHop != null && hangHoa.FileHinhMoHop.Length > 0)
+                {
+                    var fileName = Path.GetFileName(hangHoa.FileHinhMoHop.FileName);
+                    var fullPath = Path.Combine(path, fileName);
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    await hangHoa.FileHinhMoHop.CopyToAsync(stream);
+                    sp.HinhMoHop = fileName;
+                }
+                else
+                {
+                    sp.HinhMoHop = hangHoa.HinhMoHop; // giữ ảnh cũ
+                }
+                // Ảnh thực tế
+                if (hangHoa.FileHinhThucTe != null && hangHoa.FileHinhThucTe.Length > 0)
+                {
+                    var fileName = Path.GetFileName(hangHoa.FileHinhThucTe.FileName);
+                    var fullPath = Path.Combine(path, fileName);
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    await hangHoa.FileHinhThucTe.CopyToAsync(stream);
+                    sp.HinhThucTe = fileName;
+                }
+                else
+                {
+                    sp.HinhThucTe = hangHoa.HinhThucTe; // giữ ảnh cũ
+                }
+
+
+
+                // Lưu vào database
+                _context.Update(sp);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "✅ Cập nhật sản phẩm thành công!";
+
+                // Thông báo thành công
+                TempData["SuccessMessage"] = "✅ Sửa sản phẩm thành công!";
                 return RedirectToAction("Index");
             }
 
+            // Nếu lỗi thì load lại danh sách dropdown
             ViewBag.MaNCCList = GetMaNCCList();
             ViewBag.DsMaLoai = GetDsMaLoai();
             return View(hangHoa);
         }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var email = User.Identity?.Name;
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login", "Account");
+
+            var user = _context.TaiKhoan.FirstOrDefault(tk => tk.Email == email);
+            if (user == null)
+                return NotFound();
+
+            return View(user); // truyền model TaiKhoan sang View
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(TaiKhoan model)
+        {
+            var email = User.Identity?.Name;
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Account");
+
+            var user = _context.TaiKhoan.FirstOrDefault(tk => tk.Email == email);
+            if (user == null) return NotFound();
+
+            // ❌ Không cho admin sửa
+            if (user.VaiTro == "Admin")
+            {
+                TempData["Loi"] = "Admin không được phép sửa thông tin.";
+                return RedirectToAction("Profile");
+            }
+
+            // ✅ Cập nhật họ tên
+            user.HoTen = model.HoTen;
+
+            // ✅ Xử lý ảnh đại diện
+            if (model.FileAnhDaiDien != null && model.FileAnhDaiDien.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "avatars");
+                Directory.CreateDirectory(uploadsFolder); // tạo thư mục nếu chưa có
+
+                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(model.FileAnhDaiDien.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.FileAnhDaiDien.CopyToAsync(stream);
+                }
+
+                user.AnhDaiDien = fileName;
+            }
+            else
+            {
+                // Nếu không chọn ảnh mới, giữ lại ảnh cũ
+                user.AnhDaiDien = model.AnhDaiDien;
+            }
+
+            // ✅ Lưu
+            _context.SaveChanges();
+
+            TempData["ThongBao"] = "✅ Cập nhật thông tin thành công!";
+            return RedirectToAction("Profile");
+        }
+
 
 
         [HttpPost]
@@ -248,8 +366,12 @@ namespace ShopPhone.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(HangHoa hangHoa, IFormFile Hinh, IFormFile HinhMoHop, IFormFile HinhThucTe)
+        public async Task<IActionResult> Create(HangHoa hangHoa, IFormFile FileHinh, IFormFile FileHinhMoHop, IFormFile FileHinhThucTe)
         {
+            hangHoa.FileHinh = FileHinh;
+            hangHoa.FileHinhMoHop = FileHinhMoHop;
+            hangHoa.FileHinhThucTe = FileHinhThucTe;
+
             if (ModelState.IsValid)
             {
                 // Tạo thư mục wwwroot/images nếu chưa có
@@ -258,41 +380,40 @@ namespace ShopPhone.Controllers
                     Directory.CreateDirectory(pathSave);
 
                 // Lưu hình chính
-                if (Hinh != null && Hinh.Length > 0)
+                if (FileHinh != null && FileHinh.Length > 0)
                 {
-                    var fileName = Path.GetFileName(Hinh.FileName);
+                    var fileName = Path.GetFileName(FileHinh.FileName);
                     var fullPath = Path.Combine(pathSave, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
-                        await Hinh.CopyToAsync(stream);
+                        await FileHinh.CopyToAsync(stream);
                     }
                     hangHoa.Hinh = fileName;
                 }
 
                 // Lưu hình mở hộp
-                if (HinhMoHop != null && HinhMoHop.Length > 0)
+                if (FileHinhMoHop != null && FileHinhMoHop.Length > 0)
                 {
-                    var fileName = Path.GetFileName(HinhMoHop.FileName);
+                    var fileName = Path.GetFileName(FileHinhMoHop.FileName);
                     var fullPath = Path.Combine(pathSave, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
-                    {
-                        await HinhMoHop.CopyToAsync(stream);
-                    }
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    await FileHinhMoHop.CopyToAsync(stream);
                     hangHoa.HinhMoHop = fileName;
                 }
 
+
                 // Lưu hình thực tế
-                if (HinhThucTe != null && HinhThucTe.Length > 0)
+                if (FileHinhThucTe != null && FileHinhThucTe.Length > 0)
                 {
-                    var fileName = Path.GetFileName(HinhThucTe.FileName);
+                    var fileName = Path.GetFileName(FileHinhThucTe.FileName);
                     var fullPath = Path.Combine(pathSave, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
-                        await HinhThucTe.CopyToAsync(stream);
+                        await FileHinhThucTe.CopyToAsync(stream);
                     }
                     hangHoa.HinhThucTe = fileName;
                 }
-
+                hangHoa.SoLanXem = 0;
                 _context.Add(hangHoa);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Thêm sản phẩm thành công!";
@@ -323,6 +444,17 @@ namespace ShopPhone.Controllers
         new SelectListItem { Value = "1007", Text = "1007 - Laptop" },
         new SelectListItem { Value = "1008", Text = "1008 - Phụ Kiện" }
 };
+            if (!ModelState.IsValid)
+            {
+                foreach (var entry in ModelState)
+                {
+                    var key = entry.Key;
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        _logger.LogWarning("❌ ModelState Error: Field '{Field}' - {Error}", key, error.ErrorMessage);
+                    }
+                }
+            }
 
             return View(hangHoa);
         }
@@ -360,4 +492,5 @@ namespace ShopPhone.Controllers
         }
 
     }
+
 }

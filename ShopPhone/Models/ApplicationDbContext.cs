@@ -13,5 +13,8 @@ namespace ShopPhone.Models
         public DbSet<HangHoa> HangHoa { get; set; }
         public DbSet<GioHangDb> GioHangDb { get; set; }
         public DbSet<GioHangChiTietDb> GioHangChiTietDb { get; set; }
+        public DbSet<DonHang> DonHang { get; set; }
+        public DbSet<ChiTietDonHang> ChiTietDonHang { get; set; }
+
     }
 }

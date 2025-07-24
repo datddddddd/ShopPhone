@@ -59,10 +59,52 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Hình mới (nếu muốn thay)</label>
-        <input type="file" name="Hinh" class="form-control" />
+        <label class="form-label">Hình mới </label>
+        <input asp-for="FileHinh" type="file" class="form-control" />
+        <span asp-validation-for="FileHinh" class="text-danger"></span>
         <span asp-validation-for="Hinh" class="text-danger"></span>
     </div>
+    @if (!string.IsNullOrEmpty(Model.Hinh))
+    {
+        <div class="mb-2">
+            <label class="form-label">Ảnh chính hiện tại:</label><br />
+            <img src="~/images/@Model.Hinh" alt="Ảnh chính" width="150" />
+        </div>
+    }
+
+
+
+    <div class="mb-3">
+        <label class="form-label">Ảnh mở hộp</label>
+        <input asp-for="FileHinhMoHop" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhMoHop" class="text-danger"></span>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.HinhMoHop))
+{
+    <div class="mb-2">
+        <label class="form-label">Ảnh mở hộp hiện tại:</label><br />
+        <img src="~/images/@Model.HinhMoHop" alt="Ảnh mở hộp" width="150" />
+    </div>
+
+    <!-- GIỮ LẠI TÊN FILE ẢNH MỞ HỘP CŨ -->
+    <input type="hidden" asp-for="HinhMoHop" />
+}
+
+    <div class="mb-3">
+        <label class="form-label">Ảnh thực tế</label>
+        <input asp-for="FileHinhThucTe" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhThucTe" class="text-danger"></span>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.HinhThucTe))
+{
+    <div class="mb-2">
+        <label class="form-label">Ảnh thực tế hiện tại:</label><br />
+        <img src="~/images/@Model.HinhThucTe" alt="Ảnh thực tế" width="150" />
+    </div>
+
+    <!-- GIỮ LẠI TÊN FILE ẢNH THỰC TẾ CŨ -->
+    <input type="hidden" asp-for="HinhThucTe" />
+}
 
     <div class="mb-3">
         <label class="form-label">Ngày sản xuất</label>

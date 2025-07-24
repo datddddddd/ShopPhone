@@ -1,0 +1,28 @@
+﻿@model List<ShopPhone.Models.LienHe>
+@{
+    ViewData["Title"] = "Quản lý liên hệ";
+}
+
+<h2 class="my-4 text-danger"><i class="bi bi-inbox-fill"></i> Quản lý liên hệ</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Nội dung</th>
+            <th>Ngày gửi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var lh in Model)
+        {
+            <tr>
+                <td>@lh.HoTen</td>
+                <td>@lh.Email</td>
+                <td>@lh.NoiDung</td>
+                <td>@lh.NgayGui.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

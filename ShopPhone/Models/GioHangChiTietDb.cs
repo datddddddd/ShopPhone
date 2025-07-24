@@ -13,6 +13,8 @@ namespace ShopPhone.Models
 
         // FK -> HangHoa
         public int MaHH { get; set; }
+        public bool BaoHanh1 { get; set; } = false;
+        public bool BaoHanh2 { get; set; } = false;
 
         public int SoLuong { get; set; }
 

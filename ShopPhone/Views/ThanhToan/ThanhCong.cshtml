@@ -1,0 +1,198 @@
+@model ShopPhone.Models.DonHang
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-success">
+                <div class="card-header bg-success text-white text-center">
+                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                    <h3 class="mb-0">Đặt Hàng Thành Công!</h3>
+                    <p class="mb-0">Cảm ơn bạn đã mua hàng tại ShopPhone</p>
+                </div>
+                <div class="card-body">
+                    <!-- Thông tin đơn hàng -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-receipt me-2"></i>Thông Tin Đơn Hàng</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Mã đơn hàng:</strong></td>
+                                    <td class="text-primary">#@Model.DonHangId</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngày đặt:</strong></td>
+                                    <td>@Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Trạng thái:</strong></td>
+                                    <td><span class="badge bg-warning">@Model.TrangThai</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mã giao dịch:</strong></td>
+                                    <td class="text-info">@Model.MaGiaoDich</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-money-bill-wave me-2"></i>Thông Tin Thanh Toán</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Phương thức:</strong></td>
+                                    <td>@Model.PhuongThucThanhToan?.Ten</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Trạng thái:</strong></td>
+                                    <td><span class="badge bg-success">@Model.TrangThaiThanhToan</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngày thanh toán:</strong></td>
+                                    <td>@(Model.NgayThanhToan?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin giao hàng -->
+                    @if (Model.ThongTinGiaoHang != null)
+                    {
+                        <div class="mb-4">
+                            <h5><i class="fas fa-shipping-fast me-2"></i>Thông Tin Giao Hàng</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td><strong>Người nhận:</strong></td>
+                                            <td>@Model.ThongTinGiaoHang.HoTen</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Số điện thoại:</strong></td>
+                                            <td>@Model.ThongTinGiaoHang.SoDienThoai</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Địa chỉ:</strong></td>
+                                            <td>@Model.ThongTinGiaoHang.DiaChi</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td><strong>Phương thức:</strong></td>
+                                            <td>@Model.PhuongThucGiaoHang?.Ten</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ngày giao dự kiến:</strong></td>
+                                            <td>@Model.ThongTinGiaoHang.NgayGiaoDuKien.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Trạng thái:</strong></td>
+                                            <td><span class="badge bg-info">@Model.ThongTinGiaoHang.TrangThaiGiaoHang</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Chi tiết sản phẩm -->
+                    <div class="mb-4">
+                        <h5><i class="fas fa-box me-2"></i>Chi Tiết Sản Phẩm</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end">Đơn giá</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ChiTietDonHang)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@Url.Content("~/images/" + item.HangHoa.Hinh)"
+                                                        alt="@item.HangHoa.TenHH" class="me-3"
+                                                        style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <div>
+                                                        <strong>@item.HangHoa.TenHH</strong>
+                                                        @if (item.BaoHanh1 || item.BaoHanh2)
+                                                        {
+                                                            <br>
+                                                    
+                                                            <small class="text-success">
+                                                                @if (item.BaoHanh1)
+                                                                {
+                                                                    <span class="badge bg-success me-1">Bảo
+                                                                        hành 1 năm</span>
+                                                                }
+                                                                @if (item.BaoHanh2)
+                                                                {
+                                                                    <span class="badge bg-success">Bảo hành 2
+                                                                        năm</span>
+                                                                }
+                                                            </small>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@item.SoLuong</td>
+                                            <td class="text-end">@(item.DonGia?.ToString("N0") ?? "0") VNĐ</td>
+                                            <td class="text-end">@item.ThanhTien.ToString("N0") VNĐ</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tổng tiền -->
+                    <div class="row justify-content-end">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Tổng tiền hàng:</strong></td>
+                                    <td class="text-end">@Model.TongTien.ToString("N0") VNĐ</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phí giao hàng:</strong></td>
+                                    <td class="text-end">@Model.PhiGiaoHang.ToString("N0") VNĐ</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td><strong class="h5">Tổng cộng:</strong></td>
+                                    <td class="text-end"><strong
+                                            class="h5 text-primary">@Model.TongTienSauPhiGiaoHang.ToString("N0")
+                                            VNĐ</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Thông báo -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Lưu ý:</strong> Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận đơn
+                        hàng.
+                        Bạn có thể theo dõi trạng thái đơn hàng trong tài khoản của mình.
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">
+                            <i class="fas fa-home me-2"></i>Về Trang Chủ
+                        </a>
+                        <a href="@Url.Action("Index", "HangHoa")" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i>Tiếp Tục Mua Hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

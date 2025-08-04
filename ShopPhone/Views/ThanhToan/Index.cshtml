@@ -1,0 +1,218 @@
+@model ShopPhone.Models.ThanhToanViewModel
+@{
+    ViewData["Title"] = "Thanh Toán";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-credit-card me-2"></i>Thông Tin Thanh Toán</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="XuLyThanhToan" method="post" id="thanhToanForm">
+                        <!-- Thông tin giao hàng -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-shipping-fast me-2"></i>Thông Tin Giao Hàng</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="HoTen" class="form-label">Họ và tên *</label>
+                                    <input asp-for="HoTen" class="form-control" placeholder="Nhập họ và tên">
+                                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="SoDienThoai" class="form-label">Số điện thoại *</label>
+                                    <input asp-for="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại">
+                                    <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="DiaChi" class="form-label">Địa chỉ *</label>
+                                <textarea asp-for="DiaChi" class="form-control" rows="2" placeholder="Nhập địa chỉ giao hàng"></textarea>
+                                <span asp-validation-for="DiaChi" class="text-danger"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="TinhThanh" class="form-label">Tỉnh/Thành phố</label>
+                                    <input asp-for="TinhThanh" class="form-control" placeholder="Nhập tỉnh/thành phố">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="QuanHuyen" class="form-label">Quận/Huyện</label>
+                                    <input asp-for="QuanHuyen" class="form-control" placeholder="Nhập quận/huyện">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+                                <textarea asp-for="GhiChu" class="form-control" rows="2" placeholder="Ghi chú thêm (nếu có)"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Phương thức giao hàng -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-truck me-2"></i>Phương Thức Giao Hàng</h5>
+                            @foreach (var giaoHang in Model.DanhSachGiaoHang)
+                            {
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" asp-for="PhuongThucGiaoHangId" 
+                                               value="@giaoHang.Id" id="giaoHang@giaoHang.Id" 
+                                               data-phi="@giaoHang.PhiGiaoHang">
+                                        <label class="form-check-label" for="giaoHang@giaoHang.Id">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>@giaoHang.Ten</strong>
+                                                    <br><small class="text-muted">@giaoHang.MoTa</small>
+                                                </div>
+                                                <span class="badge bg-info">@giaoHang.PhiGiaoHang.ToString("N0") VNĐ</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                            }
+                            <span asp-validation-for="PhuongThucGiaoHangId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-money-bill-wave me-2"></i>Phương Thức Thanh Toán</h5>
+                            @foreach (var thanhToan in Model.DanhSachThanhToan)
+                            {
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" asp-for="PhuongThucThanhToanId" 
+                                               value="@thanhToan.Id" id="thanhToan@thanhToan.Id" 
+                                               data-yeu-cau-the="@thanhToan.YeuCauTheTinDung.ToString().ToLower()">
+                                        <label class="form-check-label" for="thanhToan@thanhToan.Id">
+                                            <div class="d-flex align-items-center">
+                                                <i class="@thanhToan.Icon me-3 text-primary" style="font-size: 1.5rem;"></i>
+                                                <div>
+                                                    <strong>@thanhToan.Ten</strong>
+                                                    <br><small class="text-muted">@thanhToan.MoTa</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                            }
+                            <span asp-validation-for="PhuongThucThanhToanId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Thông tin thẻ tín dụng (ẩn/hiện) -->
+                        <div id="theTinDungSection" class="mb-4" style="display: none;">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-credit-card me-2"></i>Thông Tin Thẻ Tín Dụng</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Thẻ test:</strong> Sử dụng thông tin sau để test thanh toán:
+                                <br><strong>Visa:</strong> 4111111111111111 | <strong>MasterCard:</strong> 5555555555554444
+                                <br><strong>Chủ thẻ:</strong> TEST USER | <strong>Ngày hết hạn:</strong> 12/25 | <strong>CVV:</strong> 123
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="SoThe" class="form-label">Số thẻ *</label>
+                                    <input asp-for="SoThe" class="form-control" placeholder="Nhập số thẻ" maxlength="16">
+                                    <span asp-validation-for="SoThe" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ChuThe" class="form-label">Chủ thẻ *</label>
+                                    <input asp-for="ChuThe" class="form-control" placeholder="Nhập tên chủ thẻ">
+                                    <span asp-validation-for="ChuThe" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="NgayHetHan" class="form-label">Ngày hết hạn *</label>
+                                    <input asp-for="NgayHetHan" class="form-control" placeholder="MM/YY" maxlength="5">
+                                    <span asp-validation-for="NgayHetHan" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CVV" class="form-label">CVV *</label>
+                                    <input asp-for="CVV" class="form-control" placeholder="Nhập CVV" maxlength="4">
+                                    <span asp-validation-for="CVV" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Xác Nhận Đặt Hàng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tóm tắt đơn hàng -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Tóm Tắt Đơn Hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tổng tiền hàng:</span>
+                        <strong>@Model.TongTien.ToString("N0") VNĐ</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Phí giao hàng:</span>
+                        <strong id="phiGiaoHang">0 VNĐ</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="h5">Tổng cộng:</span>
+                        <strong class="h5 text-primary" id="tongCong">@Model.TongTien.ToString("N0") VNĐ</strong>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <small>Vui lòng kiểm tra kỹ thông tin trước khi xác nhận đặt hàng.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            $(document).ready(function() {
+                // Xử lý hiển thị/ẩn thông tin thẻ tín dụng
+                $('input[name="PhuongThucThanhToanId"]').change(function() {
+                    var yeuCauThe = $(this).data('yeu-cau-the');
+                    if (yeuCauThe === 'true') {
+                        $('#theTinDungSection').show();
+                    } else {
+                        $('#theTinDungSection').hide();
+                    }
+                });
+
+                // Xử lý tính phí giao hàng
+                $('input[name="PhuongThucGiaoHangId"]').change(function() {
+                    var phiGiaoHang = $(this).data('phi');
+                    var tongTien = @Model.TongTien;
+                    var tongCong = tongTien + phiGiaoHang;
+                
+                    $('#phiGiaoHang').text(phiGiaoHang.toLocaleString() + ' VNĐ');
+                    $('#tongCong').text(tongCong.toLocaleString() + ' VNĐ');
+                });
+
+                // Format số thẻ
+                $('#SoThe').on('input', function() {
+                    var value = $(this).val().replace(/\D/g, '');
+                    $(this).val(value);
+                });
+
+                // Format ngày hết hạn
+                $('#NgayHetHan').on('input', function() {
+                    var value = $(this).val().replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                    }
+                    $(this).val(value);
+                });
+
+                // Format CVV
+                $('#CVV').on('input', function() {
+                    var value = $(this).val().replace(/\D/g, '');
+                    $(this).val(value);
+                });
+            });
+        </script>
+}

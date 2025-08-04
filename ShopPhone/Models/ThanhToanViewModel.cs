@@ -50,11 +50,13 @@ namespace ShopPhone.Models
 
         // Thông tin đơn hàng
         public decimal TongTien { get; set; }
+
         public decimal PhiGiaoHang { get; set; }
         public decimal TongTienSauPhiGiaoHang { get; set; }
 
         // Danh sách các phương thức
         public List<PhuongThucGiaoHang> DanhSachGiaoHang { get; set; } = new();
+
         public List<PhuongThucThanhToan> DanhSachThanhToan { get; set; } = new();
     }
 }

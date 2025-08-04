@@ -8,5 +8,4 @@ namespace ShopPhone.Views
         [MinLength(6, ErrorMessage = "Mật khẩu phải ít nhất 6 ký tự.")]
         public string Password { get; set; }
     }
-
 }

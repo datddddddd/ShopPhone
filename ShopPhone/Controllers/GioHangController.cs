@@ -49,7 +49,6 @@ namespace ShopPhone.Controllers
             return View(gioHang);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemVaoGio([FromBody] ThemVaoGioModel model)
@@ -85,7 +84,6 @@ namespace ShopPhone.Controllers
     x.BaoHanh2 == model.BaoHanh2
 );
 
-
             if (chiTiet != null)
             {
                 chiTiet.SoLuong += model.SoLuong;
@@ -111,7 +109,6 @@ namespace ShopPhone.Controllers
             await _context.SaveChangesAsync();
             return Json(new { success = true, message = "Đã thêm vào giỏ hàng!" });
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Xoa(int id)
@@ -190,7 +187,6 @@ namespace ShopPhone.Controllers
             });
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CapNhatBaoHanh([FromBody] CapNhatBaoHanh model)
@@ -216,7 +212,6 @@ namespace ShopPhone.Controllers
             chiTiet.DonGia = donGiaSanPham + tienBH;
 
             await _context.SaveChangesAsync();
-
 
             // Tính lại toàn bộ giỏ hàng
             var gio = await _context.GioHangDb
@@ -259,7 +254,6 @@ namespace ShopPhone.Controllers
                 }
             }
 
-
             return Json(new
             {
                 success = true,
@@ -271,5 +265,3 @@ namespace ShopPhone.Controllers
         }
     }
 }
-
-

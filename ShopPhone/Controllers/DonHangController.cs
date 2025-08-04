@@ -71,7 +71,7 @@ namespace ShopPhone.Controllers
                 var hangHoa = _context.HangHoa.Find(item.MaHH);
                 decimal giaGoc = hangHoa.GiaGoc;
                 decimal giamGia = hangHoa.GiamGia ?? 0;
-                decimal giaSauGiam = giaGoc * (1 - giamGia / 100); 
+                decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
                 // ✅ Tính bảo hành
                 decimal tienBH = 0;

@@ -1,5 +1,4 @@
-﻿using ShopPhone.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShopPhone.Models
@@ -8,6 +7,7 @@ namespace ShopPhone.Models
     {
         [Key]  // ✅ Đánh dấu khóa chính cho EF
         public int Id { get; set; }
+
         public int DonHangId { get; set; }
         public int MaHH { get; set; }
         public int SoLuong { get; set; }
@@ -20,8 +20,8 @@ namespace ShopPhone.Models
         public decimal ThanhTien { get; set; }
 
         public DonHang DonHang { get; set; }    // Navigation property
+
         [ForeignKey("MaHH")]
         public HangHoa HangHoa { get; set; }    // Navigation property
     }
 }
-

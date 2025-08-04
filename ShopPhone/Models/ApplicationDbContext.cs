@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShopPhone.Models;
 
 namespace ShopPhone.Models
 {
@@ -19,6 +18,7 @@ namespace ShopPhone.Models
 
         // Thanh toán và giao hàng
         public DbSet<PhuongThucThanhToan> PhuongThucThanhToan { get; set; } = null!;
+
         public DbSet<PhuongThucGiaoHang> PhuongThucGiaoHang { get; set; } = null!;
         public DbSet<TheTinDung> TheTinDung { get; set; } = null!;
         public DbSet<ThongTinGiaoHang> ThongTinGiaoHang { get; set; } = null!;

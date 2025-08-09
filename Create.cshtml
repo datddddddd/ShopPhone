@@ -1,0 +1,150 @@
+﻿@model ShopPhone.Models.HangHoa
+
+@{
+    ViewData["Title"] = "Thêm Sản Phẩm";
+}
+
+<h2 class="text-danger fw-bold mb-4">Thêm Sản Phẩm</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>❌ Có lỗi khi thêm sản phẩm:</strong>
+        <ul>
+            @foreach (var entry in ViewData.ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+
+@* Hiển thị lỗi tổng quát *@
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="TenHH"></label>
+        <input asp-for="TenHH" class="form-control" id="TenHH" />
+        <span asp-validation-for="TenHH" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TenAlias"></label>
+        <input asp-for="TenAlias" class="form-control" id="TenAlias" readonly />
+        <span asp-validation-for="TenAlias" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MaLoai">Mã loại</label>
+        <select asp-for="MaLoai" asp-items="ViewBag.DsMaLoai" class="form-control">
+            <option value="">-- Chọn mã loại --</option>
+        </select>
+        <span asp-validation-for="MaLoai" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MoTaDonVi">Mô Tả Đơn Vị</label>
+        <input asp-for="MoTaDonVi" class="form-control" />
+        <span asp-validation-for="MoTaDonVi" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DonGia">Đơn Giá</label>
+        <input asp-for="DonGia" class="form-control" />
+        <span asp-validation-for="DonGia" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FileHinh">Hình ảnh chính</label>
+        <input asp-for="FileHinh" type="file" class="form-control" />
+        <span asp-validation-for="FileHinh" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="NgaySX">Ngày Sản Xuất</label>
+        <input asp-for="NgaySX" type="date" class="form-control" />
+        <span asp-validation-for="NgaySX" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GiamGia">Giảm Giá</label>
+        <input asp-for="GiamGia" class="form-control" />
+        <span asp-validation-for="GiamGia" class="text-danger"></span>
+    </div>
+
+    @* Ẩn nếu không nhập tay *@
+    <input type="hidden" asp-for="SoLanXem" />
+
+    <div class="form-group">
+        <label asp-for="MoTa">Mô Tả</label>
+        <textarea asp-for="MoTa" class="form-control"></textarea>
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaNCC">Mã Nhà Cung Cấp</label>
+        <select asp-for="MaNCC" class="form-control" asp-items="ViewBag.MaNCCList">
+            <option value="">-- Chọn nhà cung cấp --</option>
+        </select>
+        <span asp-validation-for="MaNCC" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Đánh giá:</label>
+        <div class="star-rating">
+            @for (int i = 5; i >= 1; i--)
+            {
+                <input type="radio" id="star-@i" name="DanhGia" value="@i" />
+                <label for="star-@i">&#9733;</label>
+            }
+        </div>
+    </div>
+
+    <!-- Hình mở hộp -->
+    <div class="form-group">
+        <label asp-for="FileHinhMoHop">Hình mở hộp</label>
+        <input asp-for="FileHinhMoHop" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhMoHop" class="text-danger"></span>
+    </div>
+
+    <!-- Hình thực tế -->
+    <div class="form-group">
+        <label asp-for="FileHinhThucTe">Hình thực tế</label>
+        <input asp-for="FileHinhThucTe" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhThucTe" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="VideoId">Video ID</label>
+        <input asp-for="VideoId" class="form-control" />
+        <span asp-validation-for="VideoId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    document.getElementById("TenHH").addEventListener("input", function () {
+        const input = this.value;
+        const alias = input
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase().replace(/[^a-z0-9\s-]/g, "")
+            .trim().replace(/\s+/g, "-");
+        document.getElementById("TenAlias").value = alias;
+    });
+</script>

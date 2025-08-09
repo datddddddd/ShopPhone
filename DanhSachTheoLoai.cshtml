@@ -1,0 +1,73 @@
+﻿@model List<ShopPhone.Models.HangHoa>
+@{
+    ViewData["Title"] = "Danh sách sản phẩm theo loại ";
+    Layout = "_Layout";
+}
+
+<!-- Nếu có dùng banner hoặc carousel thì include tại đây -->
+@* Ví dụ: *@
+@* <partial name="_Banner" /> *@
+
+<!-- Tiêu đề -->
+<h2 class="text-danger mt-4 mb-3 text-center">Danh sách sản phẩm theo loại</h2>
+
+<!-- Hiển thị danh sách sản phẩm -->
+<div class="row">
+    @foreach (var sp in Model)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="product-card h-100 d-flex flex-column">
+                <img class="product-img" src="~/images/@sp.Hinh" alt="@sp.TenHH" asp-append-version="true" />
+
+                <div class="mt-auto">
+                    <div class="product-name">@sp.TenHH</div>
+
+                    <div class="price-sale">@sp.DonGia?.ToString("N0") ₫</div>
+
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a asp-controller="HangHoa"
+                           asp-action="ChiTiet"
+                           asp-route-id="@sp.MaHH"
+                           class="btn btn-outline-danger-custom btn-sm">
+                            Chi tiết
+                        </a>
+
+                        <form asp-controller="GioHang"
+                              asp-action="ThemVaoGio"
+                              method="post">
+                            <input type="hidden" name="maHH" value="@sp.MaHH" />
+                            <button type="button"
+                                    class="btn btn-danger-custom btn-sm"
+                                    onclick="themVaoGio(@sp.MaHH)">
+                                + Thêm vào giỏ
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    function themVaoGio(maHH) {
+        fetch('/GioHang/ThemVaoGio', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken':
+                  document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            },
+            body: JSON.stringify({ maHH: maHH, soLuong: 1 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Đã thêm vào giỏ!");
+            } else {
+                alert("❌ Không thêm được vào giỏ");
+            }
+        })
+        .catch(err => alert("⚠ Lỗi kết nối server"));
+    }
+</script>

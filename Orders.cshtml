@@ -1,0 +1,69 @@
+﻿@model List<ShopPhone.Models.DonHang>
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Active"] = "Quản lý đơn hàng";
+}
+
+<h3 class="text-center mb-4">📦 Quản lý đơn hàng</h3>
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">Hiện không có đơn hàng nào</div>
+}
+else
+{
+    @foreach (var don in Model)
+    {
+        <div class="card mb-4 shadow-sm p-3 border border-primary">
+            <h5>Order #@don.DonHangId - Date: @don.NgayDat.ToString("dd/MM/yyyy HH:mm")</h5>
+            <p>Customer: <strong>@don.TenDangNhap</strong></p>
+            <p>Total: <strong>@don.TongTien.ToString("N0") VND</strong></p>
+            <p>Status: <strong>@don.TrangThai</strong></p>
+
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá sản phẩm</th>
+                        <th>Tổng tiền </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var chiTietList = (don.ChiTietDonHang as IEnumerable<ChiTietDonHang>)?.Where(ct => ct.HangHoa != null);
+                    }
+
+                    @if (chiTietList != null)
+                    {
+                        foreach (var ct in chiTietList)
+                        {
+                            <tr>
+                                <td>@ct.HangHoa.TenHH</td>
+                                <td>@ct.SoLuong</td>
+                                <td>@ct.DonGia?.ToString("N0") VND</td>
+                                <td>@ct.ThanhTien.ToString("N0") VND</td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                @if (!don.DaXacNhan)
+                {
+                    <form method="post" asp-action="XacNhanDonHang" asp-controller="Admin" asp-route-id="@don.DonHangId">
+    <button type="submit" class="btn btn-success">
+        ✅ Xác nhận đơn hàng
+    </button>
+</form>
+                }
+                else
+                {
+                    <span class="badge bg-success">✔ Xác nhận đơn hàng thành công</span>
+                }
+            </div>
+        </div>
+    }
+}

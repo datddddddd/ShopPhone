@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Shop Phone</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <!-- SwiperJS CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+    <!-- Style riêng -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- SpriteSpin: Thư viện xoay ảnh 360 độ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spritespin@4.0.12/release/spritespin.css" />
+    <script src="https://cdn.jsdelivr.net/npm/spritespin@4.0.12/release/spritespin.min.js"></script>
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #e10c00;">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-white" href="/">Shop Phone</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Home" asp-action="GioiThieu">Giới thiệu</a>
+                        </li>                       
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-warning" asp-controller="Home" asp-action="DanhSachLienHe">
+                                        <i class="bi bi-inbox-fill"></i> Quản lý liên hệ
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-controller="Home" asp-action="LienHe">
+                                        <i class="bi bi-envelope"></i> Liên hệ
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Home" asp-action="LienHe">
+                                    <i class="bi bi-envelope"></i> Liên hệ
+                                </a>
+                            </li>
+                        }
+
+
+                    </ul>
+                    <!-- Tìm kiếm sản phẩm -->
+                    <form asp-controller="Home"
+                          asp-action="Index"
+                          method="get"
+                          class="d-flex align-items-center gap-2 me-3">
+
+                        <input type="text"
+                               name="tuKhoa"
+                               class="form-control py-1"
+                               placeholder="Tìm sản phẩm..."
+                               style="min-width: 180px;" />
+
+                        <button type="submit"
+                                class="btn btn-light text-dark py-1 px-3">
+                            Tìm
+                        </button>
+                    </form>
+
+
+
+
+                    <!-- Nhóm Giỏ hàng + Đăng nhập -->
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Giỏ hàng -->
+                        <a href="/gio-hang" class="cart-button d-inline-flex align-items-center text-white text-decoration-none">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 4.25C2.5 3.83579 2.83579 3.5 3.25 3.5H3.80826C4.75873 3.5 5.32782 4.13899 5.65325 4.73299C5.87016 5.12894 6.02708 5.58818 6.14982 6.00395C6.18306 6.00134 6.21674 6 6.2508 6H18.7481C19.5783 6 20.1778 6.79442 19.9502 7.5928L18.1224 14.0019C17.7856 15.1832 16.7062 15.9978 15.4779 15.9978H9.52977C8.29128 15.9978 7.2056 15.1699 6.87783 13.9756L6.11734 11.2045L4.85874 6.95578L4.8567 6.94834C4.701 6.38051 4.55487 5.85005 4.33773 5.4537C4.12686 5.0688 3.95877 5 3.80826 5H3.25C2.83579 5 2.5 4.66421 2.5 4.25ZM9 21C10.1046 21 11 20.1046 11 19C11 17.8954 10.1046 17 9 17C7.89543 17 7 17.8954 7 19C7 20.1046 7.89543 21 9 21ZM16 21C17.1046 21 18 20.1046 18 19C18 17.8954 17.1046 17 16 17C14.8954 17 14 17.8954 14 19C14 20.1046 14.8954 21 16 21Z" />
+                            </svg>
+                            @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                <a href="/Home/QuanLyDonHang" class="cart-button text-white">
+                                    <span>Quản lý giỏ hàng</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="/gio-hang" class="cart-button text-white">
+                                    <span>Giỏ hàng</span>
+                                </a>
+                            }
+
+                        </a>
+
+
+                        @using System.Security.Claims
+
+                        @{
+                            var identity = (ClaimsIdentity)User.Identity;
+                            var username = identity?.Name;
+                            var role = identity?.FindFirst(ClaimTypes.Role)?.Value;
+                            var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+                        }
+
+
+                        <div class="dropdown">
+                            <button class="dropdown-toggle d-flex justify-content-center align-items-center"
+                                    type="button"
+                                    id="userDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    style="width: 40px; height: 40px; border-radius: 9999px; background-color: black; border: none;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.7545 13.9999C18.9966 13.9999 20.0034 15.0068 20.0034 16.2488V17.1673C20.0034 17.7406 19.8242 18.2997 19.4908 18.7662C17.9449 20.9294 15.4206 22.0011 12.0004 22.0011C8.5794 22.0011 6.05643 20.9289 4.51427 18.7646C4.18231 18.2987 4.00391 17.7409 4.00391 17.1688V16.2488C4.00391 15.0068 5.01076 13.9999 6.25278 13.9999H17.7545ZM12.0004 2.00464C14.7618 2.00464 17.0004 4.24321 17.0004 7.00464C17.0004 9.76606 14.7618 12.0046 12.0004 12.0046C9.23894 12.0046 7.00036 9.76606 7.00036 7.00464C7.00036 4.24321 9.23894 2.00464 12.0004 2.00464Z" fill="white"></path>
+                                </svg>
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                @if (!isAuthenticated)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="/Account/Login">Đăng nhập</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><span class="dropdown-item-text">👤 @username</span></li>
+
+                                    @if (role == "Admin")
+                                    {
+                                        <li><a class="dropdown-item text-warning" href="/Admin/Dashboard">Quản trị</a></li>
+                                    }
+
+                                    <li><a class="dropdown-item" href="/Home/Profile">Thông tin cá nhân</a></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="/Account/Logout">Đăng xuất</a>
+                                    </li>
+                                }
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    </header>
+    <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+
+        @{
+            var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+            var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        }
+
+        @if (currentController == "Home" && currentAction == "Index")
+        {
+            <!-- Chạy quảng cáo a -->
+            <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active d-flex justify-content-center align-items-center">
+                        <img src="~/images/desk_header_2_e548a967c3.png" class="img-fluid" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="carousel-item d-flex justify-content-center align-items-center">
+                        <img src="~/images/desk_header_2_e548a967c3.png" class="img-fluid" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="carousel-item d-flex justify-content-center align-items-center">
+                        <img src="~/images/desk_header_2_e548a967c3.png" class="img-fluid" style="width: 100%; height: auto;">
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        @{
+            var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+            var action = ViewContext.RouteData.Values["action"]?.ToString();
+        }
+
+        @if (controller == "Home" && action == "Index")
+        {
+            <!-- Danh mục sản phẩm -->
+            <div class="container my-5">
+                <div class="row justify-content-center align-items-center">
+                    <!-- Cột bên trái -->
+                    <div class="col-12 col-md-4">
+                        <div class="row g-3">
+                            <!-- Xiaomi -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1003" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/xiaomi-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Xiaomi</div>
+                                </a>
+                            </div>
+                            <!-- Realme -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1005" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/Realme-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Realme</div>
+                                </a>
+                            </div>
+                            <!-- Honor -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1006" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/honor-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Honor</div>
+                                </a>
+                            </div>
+                            <!-- Vivo -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1004" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/Vivo-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Vivo</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột giữa: Laptop trung tâm -->
+                    <div class="col-12 col-md-4 d-flex justify-content-center my-3 my-md-0">
+                        <a href="/HangHoa/DanhSachTheoLoai?maloai=1007" class="d-block text-decoration-none text-center bg-white p-4 rounded shadow-sm w-100">
+                            <img src="/images/Laptop-background.jpg" class="img-fluid mb-2" style="height: 100px;" />
+                            <div class="fw-bold">Laptop</div>
+                        </a>
+                    </div>
+
+                    <!-- Cột bên phải -->
+                    <div class="col-12 col-md-4">
+                        <div class="row g-3">
+                            <!-- iPhone -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1000" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/iphone-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Iphone</div>
+                                </a>
+                            </div>
+                            <!-- Samsung -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1001" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/Samsung-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Samsung</div>
+                                </a>
+                            </div>
+                            <!-- Oppo -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1002" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/Oppo-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Oppo</div>
+                                </a>
+                            </div>
+                            <!-- Bạn có thể thêm 1 danh mục khác ở đây nếu muốn -->
+                            <div class="col-6">
+                                <a href="/HangHoa/DanhSachTheoLoai?maloai=1008" class="d-block text-decoration-none text-center bg-white p-3 rounded shadow-sm">
+                                    <img src="/images/Phukien-background.jpg" class="img-fluid mb-2" style="height: 60px;" />
+                                    <div>Phụ kiện</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <!-- Include Swiper JS -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+        <!-- Swiper Init -->
+        <script>
+            var swiper = new Swiper(".mySwiper", {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                    delay: 3000,
+                },
+            });
+        </script>
+
+        <!-- Nút điều khiển trái -->
+        <button class="carousel-control-prev custom-control" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </button>
+
+        <!-- Nút điều khiển phải -->
+        <button class="carousel-control-next custom-control" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </button>
+
+    </div>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Thêm thư viện Bootstrap JS mới nhất -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+<script>
+    AOS.init({
+        duration: 1000, // thời gian hiệu ứng (ms)
+        once: true      // chỉ chạy 1 lần khi cuộn
+    });
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+    </script>
+
+    <footer class="footer mt-5 text-white" style="background-color: #121212; padding: 40px 0;">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h5 class="fw-bold">Hệ thống Shop Phone trên toàn quốc</h5>
+                    <p>Bao gồm Cửa hàng Shop Phone, Trung tâm Laptop, Phụ kiện và dịch vụ chính hãng</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-danger">Về trang chủ</a>
+                </div>
+            </div>
+            <hr class="bg-secondary" />
+
+            <div class="row">
+                <!-- Kết nối -->
+                <div class="col-md-3">
+                    <h6 class="fw-bold">KẾT NỐI VỚI SHOP PHONE</h6>
+                    <div class="d-flex gap-2 mb-3">
+                        <a href="#"><img src="/images/face.png" width="32" /></a>
+                        <a href="#"><img src="/images/tiktok.png" width="32" /></a>
+                        <a href="#"><img src="/images/youtube.png" width="32" /></a>
+                        <a href="#"><img src="/images/instagram..png" width="32" /></a>
+                    </div>
+                    <p class="mb-1"><strong>TỔNG ĐÀI MIỄN PHÍ</strong></p>
+                    <p class="mb-1">Tư vấn: <strong>1800.6666</strong> (Miễn phí)</p>
+                    <p class="mb-1">Kỹ thuật: <strong>1800.6667</strong></p>
+                    <p class="mb-1">Góp ý: <strong>1800.6668</strong> (8h00 - 22h00)</p>
+                </div>
+
+                <!-- Về chúng tôi -->
+                <div class="col-md-3">
+                    <h6 class="fw-bold">VỀ CHÚNG TÔI</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/About" class="text-white text-decoration-none">Giới thiệu</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Tin tức</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Hướng dẫn mua hàng</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Tuyển dụng</a></li>
+                    </ul>
+                </div>
+
+                <!-- Chính sách -->
+                <div class="col-md-3">
+                    <h6 class="fw-bold">CHÍNH SÁCH</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white text-decoration-none">Bảo hành</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Đổi trả</a></li>
+                        <li><a href="/Privacy" class="text-white text-decoration-none">Bảo mật</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Trả góp</a></li>
+                    </ul>
+                </div>
+
+                <!-- Chứng nhận -->
+                <div class="col-md-3">
+                    <h6 class="fw-bold">CHỨNG NHẬN</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <img src="/images/cert/dmca.svg" width="60" />
+                        <img src="/images/cert/bocongthuong.svg" width="60" />
+                        <img src="/images/cert/vietnam.svg" width="60" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
+

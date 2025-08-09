@@ -1,0 +1,84 @@
+﻿@model ShopPhone.ViewModels.ProductDetailViewModel
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- CỘT TRÁI: Tabs Video / Ảnh -->
+        <div class="col-lg-6">
+            <ul class="nav nav-tabs mb-3" id="mediaTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab">🎬 Video</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="unbox-tab" data-bs-toggle="tab" data-bs-target="#unbox" type="button" role="tab">📦 Mở hộp</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="real-tab" data-bs-toggle="tab" data-bs-target="#real" type="button" role="tab">📷 Thực tế</button>
+                </li>
+            </ul>
+
+            <div class="tab-content border rounded p-2" id="mediaTabContent">
+                <div class="tab-pane fade show active" id="video" role="tabpanel">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="@Model.YouTubeUrl" allowfullscreen title="Video sản phẩm"></iframe>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="unbox" role="tabpanel">
+<img src="@Url.Content("~/images/" + Model.HinhMoHop)" class="img-fluid rounded" alt="Ảnh mở hộp" />
+                </div>
+                <div class="tab-pane fade" id="real" role="tabpanel">
+                    <img src="@Url.Content("~/images/" + Model.HinhThucTe)" class="img-fluid rounded" alt="Ảnh thực tế" />
+
+                </div>
+            </div>
+        </div>
+
+       <div class="col-lg-6">
+    <h2>@Model.TenHH</h2>
+
+    <div class="mb-2">
+        @for (int i = 1; i <= 5; i++)
+        {
+            if (i <= Math.Floor(Model.DanhGia))
+            {
+                <span class="text-warning">&#9733;</span> <!-- Sao đầy -->
+            }
+            else
+            {
+                <span class="text-secondary">&#9734;</span> <!-- Sao rỗng -->
+            }
+        }
+        <small class="text-muted">(@Model.DanhGia.ToString("0.0") sao)</small>
+    </div>
+
+    @if (Model.CoGiamGia)
+    {
+        <h4 class="text-success">@Model.GiaKhuyenMai.ToString("N0") đ</h4>
+        <p class="text-muted">
+            <del>@(Model.DonGia?.ToString("N0") ?? "0") đ</del>
+            - @(Model.GiamGia?.ToString("0.#") ?? "0")% giảm
+        </p>
+    }
+    else
+    {
+        <h4 class="text-success">@($"{Model.DonGia.GetValueOrDefault():N0} đ")</h4>
+    }
+
+    <p><strong>Đơn vị:</strong> @Model.MoTaDonVi</p>
+    <p><strong>Sản xuất:</strong> @Model.NgaySX.ToString("dd/MM/yyyy")</p>
+    <p><strong>Lượt xem:</strong> @Model.SoLanXem</p>
+    <p class="text-muted"><strong>Mô tả ngắn:</strong> @Model.MoTa</p>
+    <a class="btn btn-danger">Mua ngay</a>
+    <a class="btn btn-outline-primary ms-2">Trả góp 0%</a>
+</div>
+
+    </div>
+
+    <hr />
+
+    <!-- Thông tin mô tả -->
+    <div class="mt-4">
+        <h4>Thông tin chi tiết</h4>
+        <p>@Html.Raw(Model.MoTa)</p>
+    </div>
+</div>
+

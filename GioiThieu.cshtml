@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Giới thiệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container my-5">
+    <div class="intro-section fade-in">
+        <div class="row justify-content-center">
+            <!-- Cột văn bản -->
+            <div class="col-lg-10">
+                <h1 class="intro-title mb-3" data-aos="fade-up">
+                    Chào mừng bạn đến với Shop Phone
+                </h1>
+                <p class="intro-subtitle" data-aos="fade-left">
+                    Shop Phone là hệ thống bán lẻ <strong>điện thoại di động, laptop</strong> và thiết bị công nghệ chính hãng với tiêu chí:
+                    <span class="highlight">"Giá tốt - Chất lượng - Tận tâm".</span>
+                </p>
+
+                <p>🎯 <strong>Được thành lập từ năm 2020</strong>, Shop Phone không ngừng phát triển để mang đến trải nghiệm mua sắm hiện đại và uy tín cho khách hàng.</p>
+
+                <ul class="intro-list list-unstyled">
+                    <li><i class="bi bi-check-circle-fill intro-icon"></i> Hàng chính hãng từ Apple, Samsung, Xiaomi, OPPO,...</li>
+                    <li><i class="bi bi-check-circle-fill intro-icon"></i> Laptop Dell, HP, ASUS, MSI,...</li>
+                    <li><i class="bi bi-check-circle-fill intro-icon"></i> Phụ kiện: sạc, tai nghe, cáp,...</li>
+                </ul>
+
+                <p><strong>Ưu đãi đặc biệt:</strong></p>
+                <ul class="intro-list list-unstyled">
+                    <li><i class="bi bi-gift-fill intro-icon"></i> Bảo hành đổi mới 1-1 trong 30 ngày</li>
+                    <li><i class="bi bi-cash-coin intro-icon"></i> Hỗ trợ trả góp 0% lãi suất</li>
+                    <li><i class="bi bi-truck intro-icon"></i> Giao hàng siêu tốc trong 2 giờ</li>
+                </ul>
+
+                <p class="mt-4">
+                    <span class="highlight">💬 Shop Phone cam kết</span> luôn lắng nghe và phục vụ khách hàng bằng cả trái tim. Hãy đến và cảm nhận sự khác biệt!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viewer 360 độ -->
+    <div class="container text-center mt-5">
+        <h3>Xem Sản Phẩm 360°</h3>
+        <div id="viewer360" style="width: 600px; height: 400px; margin: auto;"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/spritespin@4.0.11/release/spritespin.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const cdnImages = [
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/0.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/1.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/2.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/3.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/4.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/5.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/6.png",
+                "https://cdn.honda.com.vn/motorbike-versions/Image360/October2024/1729586598/7.png"
+            ];
+
+            $("#viewer360").spritespin({
+                source: cdnImages,
+                width: 600,
+                height: 400,
+                frameTime: 60,
+                sense: -1,
+                animate: false,
+                loop: false,
+                plugins: ["drag"]
+            });
+        });
+    </script>
+}
+

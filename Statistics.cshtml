@@ -1,0 +1,75 @@
+﻿@using System.Text.Json
+@model List<ShopPhone.Models.DonHang>
+
+@{
+    ViewData["Title"] = "Thống kê đơn hàng";
+}
+
+<h2>📊 Thống kê đơn hàng đã xác nhận</h2>
+
+<!-- Thống kê bảng -->
+<p><strong>Tổng số đơn đã xác nhận:</strong> @ViewBag.TongDon</p>
+<p><strong>Tổng doanh thu:</strong> @String.Format("{0:N0} VNĐ", ViewBag.TongDoanhThu)</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Người đặt</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var don in Model)
+        {
+            <tr>
+                <td>@don.DonHangId</td>
+                <td>@don.TenDangNhap</td>
+                <td>@don.NgayDat.ToString("dd/MM/yyyy")</td>
+                <td>@String.Format("{0:N0} VNĐ", don.TongTien)</td>
+                <td>
+                    <span class="badge bg-success">Đã xác nhận</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Biểu đồ -->
+<hr />
+<h2>📈 Biểu đồ doanh thu</h2>
+
+<canvas id="orderChart" width="600" height="300"></canvas>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('orderChart').getContext('2d');
+        const orderChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(JsonSerializer.Serialize(ViewBag.ChartLabels)),
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: @Html.Raw(JsonSerializer.Serialize(ViewBag.ChartValues)),
+                    backgroundColor: ['#198754', '#dc3545', '#ffc107', '#0d6efd'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('vi-VN') + ' VNĐ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

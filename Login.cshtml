@@ -1,0 +1,154 @@
+﻿@model ShopPhone.Models.Login
+
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<style>
+    .login-wrapper {
+        display: flex;
+        height: 100vh;
+        background: #f3f8f3;
+    }
+
+    .login-left {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        padding: 40px;
+    }
+
+    .login-form {
+        max-width: 400px;
+        width: 100%;
+    }
+
+        .login-form h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .login-form p {
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .login-form input {
+            border-radius: 10px;
+            height: 45px;
+            margin-bottom: 20px;
+        }
+
+        .login-form button {
+            height: 45px;
+            border-radius: 10px;
+            background: black;
+            color: white;
+            font-weight: bold;
+        }
+
+        .login-form a {
+            font-size: 14px;
+        }
+
+        .login-form .support {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #444;
+        }
+
+            .login-form .support a {
+                color: #0a8754;
+                font-weight: 500;
+            }
+
+    .login-right {
+        flex: 1;
+        background: url('/images/login-side.jpg') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        align-items: center; /* Căn giữa theo chiều dọc */
+        justify-content: center; /* Căn giữa theo chiều ngang */
+    }
+
+        .login-right .overlay {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 400px;
+            text-align: center; /* Cho nội dung căn giữa bên trong nếu muốn */
+        }
+
+
+    .login-form a {
+        font-size: 14px;
+        color: #007bff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .login-form a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+</style>
+
+<div class="login-wrapper">
+    <!-- LEFT -->
+    <div class="login-left">
+        <div class="login-form">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
+            <h2>Trang đăng nhập</h2>
+            <p>Vui lòng nhập địa chỉ email và mật khẩu để đăng nhập vào Shop Phone.</p>
+
+            <form asp-action="Login" method="post">
+                <div class="form-group">
+                    <input asp-for="Username" class="form-control" placeholder="Email hoặc số điện thoại" />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group">
+                    <input asp-for="Password" class="form-control" placeholder="Mật khẩu" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn w-100">Tiếp tục</button>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <a asp-controller="Account" asp-action="ForgotPassword" class="text-muted">Quên mật khẩu?</a>
+                </div>
+
+                <div class="text-center mt-3">
+                    <span>Chưa có tài khoản? </span>
+                    <a asp-controller="Account" asp-action="Register" class="text-decoration-none text-primary fw-semibold">Đăng ký ngay</a>
+                </div>
+
+                <div class="support text-center mt-4">
+                    <p>Liên hệ: <a href="mailto:support@shopphone.com">support@shopphone.com</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="login-right">
+        <div class="overlay">
+            <h4>Shop Phone – Công nghệ cho mọi người</h4>
+            <p>Khám phá điện thoại, phụ kiện và thiết bị công nghệ chính hãng với chính sách trả góp dễ dàng.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

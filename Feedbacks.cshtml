@@ -1,0 +1,37 @@
+﻿@model List<ShopPhone.Models.LienHe>
+
+@{
+    ViewData["Title"] = "Phản hồi người dùng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h3 class="mb-4 text-center">📨 Phản hồi từ người dùng</h3>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">Chưa có phản hồi nào được gửi.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Nội dung</th>
+                <th>Ngày gửi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.HoTen</td>
+                    <td>@item.Email</td>
+                    <td>@item.NoiDung</td>
+                    <td>@item.NgayGui.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,131 @@
+﻿@model ShopPhone.Models.HangHoa
+
+@{
+    ViewData["Title"] = "Sửa sản phẩm";
+}
+
+<h2 class="text-danger fw-bold mb-4">Sửa sản phẩm</h2>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>❌ Có lỗi xảy ra:</strong>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Edit" asp-controller="Home" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="MaHH" />
+
+    <div class="mb-3">
+        <label class="form-label">Tên sản phẩm</label>
+        <input asp-for="TenHH" class="form-control" />
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tên Alias</label>
+        <input asp-for="TenAlias" class="form-control" />
+        <span asp-validation-for="TenAlias" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Loại</label>
+        <select asp-for="MaLoai" class="form-select" asp-items="ViewBag.DsMaLoai"></select>
+        <span asp-validation-for="MaLoai" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Mô tả đơn vị</label>
+        <select asp-for="MoTaDonVi" class="form-select" asp-items="ViewBag.DsMaLoai"></select>
+        <span asp-validation-for="MoTaDonVi" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Mô tả</label>
+        <textarea asp-for="MoTa" class="form-control"></textarea>
+        <span asp-validation-for="MoTa" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Đơn giá</label>
+        <input asp-for="DonGia" class="form-control" />
+        <span asp-validation-for="DonGia" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Hình mới </label>
+        <input asp-for="FileHinh" type="file" class="form-control" />
+        <span asp-validation-for="FileHinh" class="text-danger"></span>
+        <span asp-validation-for="Hinh" class="text-danger"></span>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Hinh))
+    {
+        <div class="mb-2">
+            <label class="form-label">Ảnh chính hiện tại:</label><br />
+            <img src="~/images/@Model.Hinh" alt="Ảnh chính" width="150" />
+        </div>
+    }
+
+
+
+    <div class="mb-3">
+        <label class="form-label">Ảnh mở hộp</label>
+        <input asp-for="FileHinhMoHop" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhMoHop" class="text-danger"></span>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.HinhMoHop))
+{
+    <div class="mb-2">
+        <label class="form-label">Ảnh mở hộp hiện tại:</label><br />
+        <img src="~/images/@Model.HinhMoHop" alt="Ảnh mở hộp" width="150" />
+    </div>
+
+    <!-- GIỮ LẠI TÊN FILE ẢNH MỞ HỘP CŨ -->
+    <input type="hidden" asp-for="HinhMoHop" />
+}
+
+    <div class="mb-3">
+        <label class="form-label">Ảnh thực tế</label>
+        <input asp-for="FileHinhThucTe" type="file" class="form-control" />
+        <span asp-validation-for="FileHinhThucTe" class="text-danger"></span>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.HinhThucTe))
+{
+    <div class="mb-2">
+        <label class="form-label">Ảnh thực tế hiện tại:</label><br />
+        <img src="~/images/@Model.HinhThucTe" alt="Ảnh thực tế" width="150" />
+    </div>
+
+    <!-- GIỮ LẠI TÊN FILE ẢNH THỰC TẾ CŨ -->
+    <input type="hidden" asp-for="HinhThucTe" />
+}
+
+    <div class="mb-3">
+        <label class="form-label">Ngày sản xuất</label>
+        <input asp-for="NgaySX" type="date" class="form-control" />
+        <span asp-validation-for="NgaySX" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nhà cung cấp</label>
+        <select asp-for="MaNCC" class="form-select" asp-items="ViewBag.MaNCCList"></select>
+        <span asp-validation-for="MaNCC" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Video ID</label>
+        <select asp-for="VideoId" class="form-select" asp-items="ViewBag.MaNCCList"></select>
+        <span asp-validation-for="VideoId" class="text-danger"></span>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
+        <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">↩️ Quay lại</a>
+    </div>
+</form>

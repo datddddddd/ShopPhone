@@ -1,0 +1,61 @@
+﻿@model List<ShopPhone.Models.DonHang>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<h3 class="text-center mb-4">📦 Danh sách đơn hàng đã thanh toán</h3>
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">Chưa có đơn hàng nào.</div>
+}
+else
+{
+    // hiển thị danh sách đơn
+}
+
+@foreach (var don in Model)
+{
+    <div class="card mb-4 shadow-sm p-3 border border-primary">
+        <h5>Đơn hàng #@don.DonHangId - Ngày: @don.NgayDat.ToString("dd/MM/yyyy HH:mm")</h5>
+        <p>Khách hàng: <strong>@don.TenDangNhap</strong></p>
+        <p>Tổng tiền: <strong>@don.TongTien.ToString("N0") đ</strong></p>
+        <p>Trạng thái: <strong>@don.TrangThai</strong></p>
+
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ct in don.ChiTietDonHang.Where(ct => ct.HangHoa != null))
+                {
+                    <tr>
+                        <td>@ct.HangHoa.TenHH</td>
+                        <td>@ct.SoLuong</td>
+                        <td>@ct.DonGia?.ToString("N0") đ</td>
+                        <td>@ct.ThanhTien.ToString("N0") đ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            @if (!don.DaXacNhan)
+            {
+                <form method="post" asp-action="XacNhanDonHang" asp-controller="Home" asp-route-id="@don.DonHangId">
+                    <button type="submit" class="btn btn-success">
+                        ✅ Xác nhận đơn hàng
+                    </button>
+                </form>
+            }
+            else
+            {
+                <span class="badge bg-success">✔ Đã xác nhận</span>
+            }
+        </div>
+    </div>
+}

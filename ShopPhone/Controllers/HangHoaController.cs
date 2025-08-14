@@ -1,7 +1,6 @@
 ﻿// Đường dẫn: Controllers/SanPhamController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ShopPhone.Models;
 using ShopPhone.ViewModels;
 
@@ -38,6 +37,7 @@ public class HangHoaController : Controller
 
         return View(model);
     }
+
     public IActionResult ChiTiet(int id)
     {
         var hanghoa = _context.HangHoa.FirstOrDefault(h => h.MaHH == id);
@@ -50,8 +50,8 @@ public class HangHoaController : Controller
             MaHH = hanghoa.MaHH,
             TenHH = hanghoa.TenHH,
             MoTaDonVi = hanghoa.MoTaDonVi,
-            DonGia = hanghoa.DonGia ??0,
-            GiamGia = hanghoa.GiamGia ??0,
+            DonGia = hanghoa.DonGia ?? 0,
+            GiamGia = hanghoa.GiamGia ?? 0,
             Hinh = hanghoa.Hinh,
             NgaySX = hanghoa.NgaySX,
             SoLanXem = hanghoa.SoLanXem ?? 0,
@@ -64,12 +64,14 @@ public class HangHoaController : Controller
 
         return View(vm); // Tự tìm Views/SanPham/ChiTiet.cshtml
     }
+
     public IActionResult DanhSachTheoLoai(int maloai)
     {
         // Xử lý lọc sản phẩm theo mã loại
         var ds = _context.HangHoa.Where(h => h.MaLoai == maloai).ToList();
         return View(ds);
     }
+
     [HttpGet]
     public IActionResult SearchApi(string query)
     {
@@ -78,7 +80,8 @@ public class HangHoaController : Controller
 
         var kq = _context.HangHoa
             .Where(h => h.TenHH.Contains(query))
-            .Select(h => new {
+            .Select(h => new
+            {
                 h.MaHH,
                 h.TenHH,
                 h.Hinh,
@@ -89,7 +92,6 @@ public class HangHoaController : Controller
         return Json(kq);
     }
 
-  
     // GET: HangHoa/Edit/5
     [Authorize(Roles = "Admin")]
     public IActionResult Edit(int id)
@@ -136,6 +138,4 @@ public class HangHoaController : Controller
         }
         return View(hh);
     }
-
-
 }

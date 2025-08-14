@@ -49,7 +49,6 @@ namespace ShopPhone.Controllers
             return View(gioHang);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemVaoGio([FromBody] ThemVaoGioModel model)
@@ -85,7 +84,6 @@ namespace ShopPhone.Controllers
     x.BaoHanh2 == model.BaoHanh2
 );
 
-
             if (chiTiet != null)
             {
                 chiTiet.SoLuong += model.SoLuong;
@@ -111,7 +109,6 @@ namespace ShopPhone.Controllers
             await _context.SaveChangesAsync();
             return Json(new { success = true, message = "Đã thêm vào giỏ hàng!" });
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Xoa(int id)
@@ -190,7 +187,6 @@ namespace ShopPhone.Controllers
             });
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CapNhatBaoHanh([FromBody] CapNhatBaoHanh model)
@@ -217,48 +213,46 @@ namespace ShopPhone.Controllers
 
             await _context.SaveChangesAsync();
 
-
             // Tính lại toàn bộ giỏ hàng
             var gio = await _context.GioHangDb
                 .Include(x => x.ChiTietGioHang)
                 .ThenInclude(x => x.HangHoa)
                 .FirstOrDefaultAsync(x => x.Id == chiTiet.GioHangDbId);
 
-            var tongTien = gio.ChiTietGioHang
-                .Sum(x => (x.DonGia ?? 0) * x.SoLuong);
+            var tongTien = gio?.ChiTietGioHang?.Sum(x => (x.DonGia ?? 0) * x.SoLuong) ?? 0;
 
-            var tongGiam = gio.ChiTietGioHang
-                .Sum(x => ((x.HangHoa.DonGia ?? 0) * (x.HangHoa.GiamGia ?? 0) / 100) * x.SoLuong);
+            var tongGiam = gio?.ChiTietGioHang?.Sum(x => ((x.HangHoa?.DonGia ?? 0) * (x.HangHoa?.GiamGia ?? 0) / 100) * x.SoLuong) ?? 0;
 
             var canThanhToan = tongTien - tongGiam;
 
             // Danh sách khuyến mãi và bảo hành
             var htmlKM = new StringBuilder();
-            foreach (var ct in gio.ChiTietGioHang)
+            if (gio?.ChiTietGioHang != null)
             {
-                var giam = ct.HangHoa.GiamGia ?? 0;
-                var donGiaGoc = ct.HangHoa.DonGia ?? 0;
-                var donGiaThucTe = ct.DonGia ?? 0;
-
-                if (giam > 0)
+                foreach (var ct in gio.ChiTietGioHang)
                 {
-                    var giamTien = donGiaGoc * giam / 100 * ct.SoLuong;
-                    htmlKM.Append($"<li><strong>{ct.HangHoa.TenHH}:</strong> Giảm {giam:0.#}% x {ct.SoLuong} = {giamTien:N0} đ</li>");
-                }
+                    var giam = ct.HangHoa?.GiamGia ?? 0;
+                    var donGiaGoc = ct.HangHoa?.DonGia ?? 0;
+                    var donGiaThucTe = ct.DonGia ?? 0;
 
-                var tienBH1SP = donGiaThucTe - donGiaGoc;
-                var tienBHTong = tienBH1SP * ct.SoLuong;
+                    if (giam > 0)
+                    {
+                        var giamTien = donGiaGoc * giam / 100 * ct.SoLuong;
+                        htmlKM.Append($"<li><strong>{ct.HangHoa?.TenHH}:</strong> Giảm {giam:0.#}% x {ct.SoLuong} = {giamTien:N0} đ</li>");
+                    }
 
-                if (tienBH1SP > 0)
-                {
-                    htmlKM.Append($@"
-        <li><strong>{ct.HangHoa.TenHH}:</strong>
+                    var tienBH1SP = donGiaThucTe - donGiaGoc;
+                    var tienBHTong = tienBH1SP * ct.SoLuong;
+
+                    if (tienBH1SP > 0)
+                    {
+                        htmlKM.Append($@"
+        <li><strong>{ct.HangHoa?.TenHH}:</strong>
         Bảo hành +{tienBH1SP:N0} đ × {ct.SoLuong} = {tienBHTong:N0} đ</li>
     ");
+                    }
                 }
-
             }
-
 
             return Json(new
             {
@@ -271,5 +265,3 @@ namespace ShopPhone.Controllers
         }
     }
 }
-
-

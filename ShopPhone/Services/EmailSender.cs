@@ -37,4 +37,3 @@ namespace ShopPhone.Services
         }
     }
 }
-    

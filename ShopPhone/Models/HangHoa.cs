@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShopPhone.Models
@@ -11,12 +10,14 @@ namespace ShopPhone.Models
 
         [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
         public string TenHH { get; set; }
+
         public string? TenAlias { get; set; }
         public int MaLoai { get; set; }
         public string MoTaDonVi { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Đơn giá phải >= 0")]
         public decimal? DonGia { get; set; }    // giá đã giảm
+
         public decimal? GiamGia { get; set; }    // % giảm
         public string? Hinh { get; set; }
 
@@ -26,16 +27,16 @@ namespace ShopPhone.Models
 
         public int? SoLanXem { get; set; }
         public string? MoTa { get; set; }
-        public string? MaNCC { get; set; }    
+        public string? MaNCC { get; set; }
         public double? DanhGia { get; set; }
         public string? HinhMoHop { get; set; }
         public string? HinhThucTe { get; set; }
         public string? VideoId { get; set; }
 
         /* ---------- Thuộc tính tính toán ---------- */
+
         [NotMapped]
         public IFormFile? FileHinh { get; set; }
-
 
         [NotMapped]
         public IFormFile? FileHinhMoHop { get; set; }

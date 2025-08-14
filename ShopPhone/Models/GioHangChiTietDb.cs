@@ -13,6 +13,7 @@ namespace ShopPhone.Models
 
         // FK -> HangHoa
         public int MaHH { get; set; }
+
         public bool BaoHanh1 { get; set; } = false;
         public bool BaoHanh2 { get; set; } = false;
 
@@ -27,6 +28,7 @@ namespace ShopPhone.Models
         public int GoiBaoHanh { get; set; }
 
         /* ------------ Navigation ------------ */
+
         [ForeignKey(nameof(GioHangDbId))]
         public GioHangDb? GioHang { get; set; }
 

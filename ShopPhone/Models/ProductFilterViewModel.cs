@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace ShopPhone.Models
+﻿namespace ShopPhone.Models
 {
     public class ProductFilterViewModel
     {
-        public List<HangHoa> DanhSachSanPham { get; set; } = new List<HangHoa>(); 
+        public List<HangHoa> DanhSachSanPham { get; set; } = new List<HangHoa>();
         public int SoTrang { get; set; }
         public int TrangHienTai { get; set; }
 

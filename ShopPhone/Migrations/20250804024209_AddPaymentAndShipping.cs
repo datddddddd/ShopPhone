@@ -296,8 +296,8 @@ namespace ShopPhone.Migrations
                 columns: new[] { "Id", "CVV", "ChuThe", "HanMuc", "HoatDong", "LoaiThe", "NgayHetHan", "NgayTao", "SoThe" },
                 values: new object[,]
                 {
-                    { 1, "123", "TEST USER", 79228162514264337593543950335m, true, "Visa", "12/25", new DateTime(2025, 8, 4, 9, 42, 8, 39, DateTimeKind.Local).AddTicks(8793), "4111111111111111" },
-                    { 2, "123", "TEST USER", 79228162514264337593543950335m, true, "MasterCard", "12/25", new DateTime(2025, 8, 4, 9, 42, 8, 41, DateTimeKind.Local).AddTicks(3210), "5555555555554444" }
+                    { 1, "123", "TEST USER", 1000000m, true, "Visa", "12/25", new DateTime(2025, 8, 4, 9, 42, 8, 39, DateTimeKind.Local).AddTicks(8793), "4111111111111111" },
+                    { 2, "123", "TEST USER", 1000000m, true, "MasterCard", "12/25", new DateTime(2025, 8, 4, 9, 42, 8, 41, DateTimeKind.Local).AddTicks(3210), "5555555555554444" }
                 });
 
             migrationBuilder.CreateIndex(

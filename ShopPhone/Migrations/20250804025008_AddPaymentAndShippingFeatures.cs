@@ -33,14 +33,14 @@ namespace ShopPhone.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "HanMuc", "NgayTao" },
-                values: new object[] { 79228162514264337593543950335m, new DateTime(2025, 8, 4, 9, 42, 8, 39, DateTimeKind.Local).AddTicks(8793) });
+                values: new object[] { 1000000m, new DateTime(2025, 8, 4, 9, 42, 8, 39, DateTimeKind.Local).AddTicks(8793) });
 
             migrationBuilder.UpdateData(
                 table: "TheTinDung",
                 keyColumn: "Id",
                 keyValue: 2,
                 columns: new[] { "HanMuc", "NgayTao" },
-                values: new object[] { 79228162514264337593543950335m, new DateTime(2025, 8, 4, 9, 42, 8, 41, DateTimeKind.Local).AddTicks(3210) });
+                values: new object[] { 1000000m, new DateTime(2025, 8, 4, 9, 42, 8, 41, DateTimeKind.Local).AddTicks(3210) });
         }
     }
 }

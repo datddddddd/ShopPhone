@@ -151,6 +151,25 @@ namespace ShopPhone.Controllers
                     return View("Index", model);
                 }
             }
+            // Kiểm tra ví MoMo nếu chọn MoMo
+            if (phuongThucThanhToan.Ten == "MoMo")
+            {
+                if (string.IsNullOrEmpty(model.SoDienThoaiVi) || string.IsNullOrEmpty(model.TenChuVi))
+                {
+                    ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin ví MoMo!");
+                    model.DanhSachGiaoHang = _context.PhuongThucGiaoHang.Where(p => p.HoatDong).OrderBy(p => p.ThuTu).ToList();
+                    model.DanhSachThanhToan = _context.PhuongThucThanhToan.Where(p => p.HoatDong).OrderBy(p => p.ThuTu).ToList();
+                    return View("Index", model);
+                }
+                var vi = _context.ViDienTu.FirstOrDefault(v => v.SoDienThoai == model.SoDienThoaiVi && v.TenChuVi == model.TenChuVi);
+                if (vi == null)
+                {
+                    ModelState.AddModelError("", "Thông tin ví MoMo không hợp lệ!");
+                    model.DanhSachGiaoHang = _context.PhuongThucGiaoHang.Where(p => p.HoatDong).OrderBy(p => p.ThuTu).ToList();
+                    model.DanhSachThanhToan = _context.PhuongThucThanhToan.Where(p => p.HoatDong).OrderBy(p => p.ThuTu).ToList();
+                    return View("Index", model);
+                }
+            }
 
             try
             {

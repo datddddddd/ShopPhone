@@ -19,13 +19,13 @@ namespace ShopPhone.Models
         public string DiaChi { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string? TinhThanh { get; set; }
+        public string TinhThanh { get; set; }
 
         [StringLength(100)]
-        public string? QuanHuyen { get; set; }
+        public string QuanHuyen { get; set; }
 
         [StringLength(500)]
-        public string? GhiChu { get; set; }
+        public string GhiChu { get; set; }
 
         // Phương thức giao hàng
         [Required(ErrorMessage = "Vui lòng chọn phương thức giao hàng")]
@@ -37,16 +37,22 @@ namespace ShopPhone.Models
 
         // Thông tin thẻ tín dụng (chỉ khi chọn thanh toán bằng thẻ)
         [StringLength(16)]
-        public string? SoThe { get; set; }
+        public string SoThe { get; set; }
 
         [StringLength(50)]
-        public string? ChuThe { get; set; }
+        public string ChuThe { get; set; }
 
         [StringLength(5)]
-        public string? NgayHetHan { get; set; }
+        public string NgayHetHan { get; set; }
 
         [StringLength(4)]
-        public string? CVV { get; set; }
+        public string CVV { get; set; }
+
+        // Thông tin ví điện tử (chỉ khi chọn MoMo)
+        [StringLength(20)]
+        public string SoDienThoaiVi { get; set; }
+        [StringLength(100)]
+        public string TenChuVi { get; set; }
 
         // Thông tin đơn hàng
         public decimal TongTien { get; set; }

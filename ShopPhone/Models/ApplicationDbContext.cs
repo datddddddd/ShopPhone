@@ -21,6 +21,7 @@ namespace ShopPhone.Models
 
         public DbSet<PhuongThucGiaoHang> PhuongThucGiaoHang { get; set; } = null!;
         public DbSet<TheTinDung> TheTinDung { get; set; } = null!;
+        public DbSet<ViDienTu> ViDienTu { get; set; } = null!;
         public DbSet<ThongTinGiaoHang> ThongTinGiaoHang { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -101,6 +102,64 @@ namespace ShopPhone.Models
                     LoaiThe = "MasterCard",
                     HanMuc = 999999,
                     HoatDong = true
+                }
+            );
+            modelBuilder.Entity<TheTinDung>().HasData(
+                new TheTinDung
+                {
+                    Id = 3,
+                    SoThe = "4000000000000002",
+                    ChuThe = "TEST USER 2",
+                    NgayHetHan = "11/26",
+                    CVV = "456",
+                    LoaiThe = "Visa",
+                    HanMuc = 888888,
+                    HoatDong = true
+                },
+                new TheTinDung
+                {
+                    Id = 4,
+                    SoThe = "5105105105105100",
+                    ChuThe = "TEST USER 3",
+                    NgayHetHan = "10/27",
+                    CVV = "789",
+                    LoaiThe = "MasterCard",
+                    HanMuc = 777777,
+                    HoatDong = true
+                },
+                new TheTinDung
+                {
+                    Id = 5,
+                    SoThe = "6011000990139424",
+                    ChuThe = "TEST USER 4",
+                    NgayHetHan = "09/28",
+                    CVV = "321",
+                    LoaiThe = "Discover",
+                    HanMuc = 666666,
+                    HoatDong = true
+                },
+                new TheTinDung
+                {
+                    Id = 6,
+                    SoThe = "3530111333300000",
+                    ChuThe = "TEST USER 5",
+                    NgayHetHan = "08/29",
+                    CVV = "654",
+                    LoaiThe = "JCB",
+                    HanMuc = 555555,
+                    HoatDong = true
+                }
+            );
+
+            // Seed data cho ví điện tử test (MoMo)
+            modelBuilder.Entity<ViDienTu>().HasData(
+                new ViDienTu
+                {
+                    Id = 1,
+                    TenChuVi = "Test Momo",
+                    SoDienThoai = "0909123456",
+                    LoaiVi = "Momo",
+                    TaiKhoanId = 1
                 }
             );
         }

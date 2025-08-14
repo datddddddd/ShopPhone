@@ -96,6 +96,26 @@
 
                         <!-- Thông tin thẻ tín dụng (ẩn/hiện) -->
                         <div id="theTinDungSection" class="mb-4" style="display: none;">
+                        <!-- Thông tin ví MoMo (ẩn/hiện) -->
+                        <div id="viMomoSection" class="mb-4" style="display: none;">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-wallet me-2"></i>Thông Tin Ví MoMo</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Ví test:</strong> Số điện thoại: 0909123456 | Tên chủ ví: Test Momo
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="SoDienThoaiVi" class="form-label">Số điện thoại ví *</label>
+                                    <input asp-for="SoDienThoaiVi" class="form-control" placeholder="Nhập số điện thoại ví MoMo">
+                                    <span asp-validation-for="SoDienThoaiVi" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="TenChuVi" class="form-label">Tên chủ ví *</label>
+                                    <input asp-for="TenChuVi" class="form-control" placeholder="Nhập tên chủ ví MoMo">
+                                    <span asp-validation-for="TenChuVi" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
                             <h5 class="border-bottom pb-2"><i class="fas fa-credit-card me-2"></i>Thông Tin Thẻ Tín Dụng</h5>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>
@@ -173,13 +193,19 @@
 @section Scripts {
         <script>
             $(document).ready(function() {
-                // Xử lý hiển thị/ẩn thông tin thẻ tín dụng
+                // Xử lý hiển thị/ẩn thông tin thẻ tín dụng và ví MoMo
                 $('input[name="PhuongThucThanhToanId"]').change(function() {
+                    var id = $(this).val();
                     var yeuCauThe = $(this).data('yeu-cau-the');
                     if (yeuCauThe === 'true') {
                         $('#theTinDungSection').show();
+                        $('#viMomoSection').hide();
+                    } else if (id == 3) { // MoMo
+                        $('#theTinDungSection').hide();
+                        $('#viMomoSection').show();
                     } else {
                         $('#theTinDungSection').hide();
+                        $('#viMomoSection').hide();
                     }
                 });
 

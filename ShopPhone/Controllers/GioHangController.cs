@@ -17,6 +17,55 @@ namespace ShopPhone.Controllers
             _context = context;
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MuaNgay(int maHH)
+        {
+            var userName = User.Identity.Name;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var gioHang = await _context.GioHangDb.Include(x => x.ChiTietGioHang).FirstOrDefaultAsync(x => x.MaNguoiDung == userId);
+            if (gioHang == null)
+            {
+                gioHang = new GioHangDb
+                {
+                    MaNguoiDung = userId,
+                    TenDangNhap = userName,
+                    NgayTao = DateTime.Now,
+                    ChiTietGioHang = new List<GioHangChiTietDb>()
+                };
+                _context.GioHangDb.Add(gioHang);
+                await _context.SaveChangesAsync();
+            }
+
+            var chiTiet = gioHang.ChiTietGioHang.FirstOrDefault(x => x.MaHH == maHH && !x.BaoHanh1 && !x.BaoHanh2);
+            if (chiTiet != null)
+            {
+                chiTiet.SoLuong += 1;
+            }
+            else
+            {
+                var hang = await _context.HangHoa.FindAsync(maHH);
+                chiTiet = new GioHangChiTietDb
+                {
+                    GioHangDbId = gioHang.Id,
+                    MaHH = maHH,
+                    SoLuong = 1,
+                    DonGia = hang.DonGia ?? 0,
+                    GiamGia = 0,
+                    BaoHanh1 = false,
+                    BaoHanh2 = false
+                };
+                _context.GioHangChiTietDb.Add(chiTiet);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
         [HttpGet("/gio-hang")]
         public async Task<IActionResult> Index()
         {
@@ -82,7 +131,7 @@ namespace ShopPhone.Controllers
     x.MaHH == model.MaHH &&
     x.BaoHanh1 == model.BaoHanh1 &&
     x.BaoHanh2 == model.BaoHanh2
-);
+    );
 
             if (chiTiet != null)
             {

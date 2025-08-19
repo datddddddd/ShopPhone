@@ -6,6 +6,34 @@
 }
 
 <h3 class="text-center mb-4">📦 Quản lý đơn hàng</h3>
+
+<!-- Bộ lọc & tìm kiếm -->
+<form method="get" class="row mb-4">
+    <div class="col-md-3">
+        <input type="text" name="search" class="form-control" placeholder="Tìm đơn hàng..." value="@ViewBag.Search" />
+    </div>
+    <div class="col-md-3">
+        <select name="trangThai" class="form-select">
+            <option value="">-- Tất cả trạng thái --</option>
+            <option value="DaXacNhan" selected="@(ViewBag.TrangThai == "DaXacNhan")">Đã xác nhận</option>
+            <option value="ChuaXacNhan" selected="@(ViewBag.TrangThai == "ChuaXacNhan")">Chưa xác nhận</option>
+
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="sort" class="form-select">
+            <option value="date_desc" selected="@(ViewBag.Sort == "date_desc")">Ngày đặt (mới nhất)</option>
+            <option value="date_asc" selected="@(ViewBag.Sort == "date_asc")">Ngày đặt (cũ nhất)</option>
+            <option value="total_desc" selected="@(ViewBag.Sort == "total_desc")">Tổng tiền (cao nhất)</option>
+            <option value="total_asc" selected="@(ViewBag.Sort == "total_asc")">Tổng tiền (thấp nhất)</option>
+
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">Lọc</button>
+    </div>
+</form>
+
 @if (Model == null || !Model.Any())
 {
     <div class="alert alert-info">Hiện không có đơn hàng nào</div>
@@ -15,10 +43,10 @@ else
     @foreach (var don in Model)
     {
         <div class="card mb-4 shadow-sm p-3 border border-primary">
-            <h5>Order #@don.DonHangId - Date: @don.NgayDat.ToString("dd/MM/yyyy HH:mm")</h5>
-            <p>Customer: <strong>@don.TenDangNhap</strong></p>
-            <p>Total: <strong>@don.TongTien.ToString("N0") VND</strong></p>
-            <p>Status: <strong>@don.TrangThai</strong></p>
+            <h5>Mã đơn hàng #@don.DonHangId - Ngày: @don.NgayDat.ToString("dd/MM/yyyy HH:mm")</h5>
+            <p>Tài khoản người đặt: <strong>@don.TenDangNhap</strong></p>
+            <p>Tổng tiền: <strong>@don.TongTien.ToString("N0") VND</strong></p>
+            <p>Tình trạng đơn hàng: <strong>@don.TrangThai</strong></p>
 
             <table class="table table-bordered">
                 <thead class="table-light">
@@ -26,27 +54,19 @@ else
                         <th>Tên sản phẩm</th>
                         <th>Số lượng</th>
                         <th>Đơn giá sản phẩm</th>
-                        <th>Tổng tiền </th>
+                        <th>Tổng tiền</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @{
-                        var chiTietList = (don.ChiTietDonHang as IEnumerable<ChiTietDonHang>)?.Where(ct => ct.HangHoa != null);
-                    }
-
-                    @if (chiTietList != null)
+                    @foreach (var ct in don.ChiTietDonHang.Where(ct => ct.HangHoa != null))
                     {
-                        foreach (var ct in chiTietList)
-                        {
-                            <tr>
-                                <td>@ct.HangHoa.TenHH</td>
-                                <td>@ct.SoLuong</td>
-                                <td>@ct.DonGia?.ToString("N0") VND</td>
-                                <td>@ct.ThanhTien.ToString("N0") VND</td>
-                            </tr>
-                        }
+                        <tr>
+                            <td>@ct.HangHoa.TenHH</td>
+                            <td>@ct.SoLuong</td>
+                            <td>@ct.DonGia?.ToString("N0") VND</td>
+                            <td>@ct.ThanhTien.ToString("N0") VND</td>
+                        </tr>
                     }
-
                 </tbody>
             </table>
 
@@ -54,10 +74,10 @@ else
                 @if (!don.DaXacNhan)
                 {
                     <form method="post" asp-action="XacNhanDonHang" asp-controller="Admin" asp-route-id="@don.DonHangId">
-    <button type="submit" class="btn btn-success">
-        ✅ Xác nhận đơn hàng
-    </button>
-</form>
+                        <button type="submit" class="btn btn-success">
+                            ✅ Xác nhận đơn hàng
+                        </button>
+                    </form>
                 }
                 else
                 {
@@ -66,4 +86,16 @@ else
             </div>
         </div>
     }
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="?page=@i&search=@ViewBag.Search&trangThai=@ViewBag.TrangThai&sort=@ViewBag.Sort">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
 }

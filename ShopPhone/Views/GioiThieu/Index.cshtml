@@ -37,39 +37,4 @@
         </div>
     </div>
 
-    <!-- Viewer 360 độ -->
-    <div class="container text-center mt-5">
-        <h3>Xem Sản Phẩm 360°</h3>
-        <div id="viewer360" style="width: 600px; height: 400px; margin: auto;"></div>
-    </div>
-</div>
-
-<!-- Đặt section Scripts sau phần HTML -->
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/spritespin@4.0.11/release/spritespin.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spritespin@4.0.11/release/spritespin.min.css">
-
-    <script>
-        $(document).ready(function () {
-            const totalFrames = 20;
-            const basePath = "/images/360/";
-            const imageFiles = [];
-
-            for (let i = 1; i <= totalFrames; i++) {
-                const filename = `ip${String(i).padStart(2, '0')}.jpg`;
-                imageFiles.push(basePath + filename);
-            }
-
-            $("#viewer360").spritespin({
-                source: imageFiles,
-                width: 600,
-                height: 400,
-                frameTime: 60,
-                animate: false,
-                sense: -1,
-                responsive: true,
-                plugins: ["drag"]
-            });
-        });
-    </script>
-}
+   

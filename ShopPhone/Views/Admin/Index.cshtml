@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Trang quản trị";
+    ViewData["Active"] = "Dashboard"; // để không làm mục nào sáng
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="mb-4 fw-bold">Chào mừng đến với Bảng điều khiển quản trị</h2>
+
+<div class="row text-center">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Sản phẩm</h5>
+                <p class="card-text">Quản lý sản phẩm tại đây</p>
+            </div>
+            <div class="card-footer">
+                <a href="/Admin/Products" class="btn btn-light btn-sm">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Đơn hàng</h5>
+                <p class="card-text">Xem & duyệt đơn hàng</p>
+            </div>
+            <div class="card-footer">
+                <a href="/Admin/Orders" class="btn btn-light btn-sm">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Phản hồi</h5>
+                <p class="card-text">Ý kiến từ người dùng</p>
+            </div>
+            <div class="card-footer">
+                <a href="/Admin/Feedbacks" class="btn btn-light btn-sm">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Thống kê</h5>
+                <p class="card-text">Xem biểu đồ thống kê</p>
+            </div>
+            <div class="card-footer">
+                <a href="/Admin/Statistics" class="btn btn-light btn-sm">Xem</a>
+            </div>
+        </div>
+    </div>
+</div>

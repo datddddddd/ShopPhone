@@ -117,13 +117,24 @@ namespace ShopPhone.Controllers
         {
             return View();
         }
-
         [Authorize]
         [HttpGet]
         public IActionResult LienHe()
         {
-            return View();
+            var model = new LienHe();
+
+            // Nếu người dùng đã đăng nhập, tự động điền email
+            if (User.Identity.IsAuthenticated)
+            {
+                model.Email = User.Identity.Name;
+                // Nếu bạn lưu email trong Claims thì dùng dòng dưới thay thế:
+                 //model.Email = User.FindFirst(ClaimTypes.Email)?.Value;
+            }
+
+            return View(model);
         }
+        
+
         [Authorize]
         [HttpPost]
         public IActionResult LienHe(LienHe model)
@@ -307,6 +318,19 @@ namespace ShopPhone.Controllers
 
             TempData["ThongBao"] = "✅ Cập nhật thông tin thành công!";
             return RedirectToAction("Profile");
+        }
+
+        [Authorize] // Bắt buộc đăng nhập mới xem
+        public IActionResult DonHangCuaToi()
+        {
+            var username = User.Identity.Name; // lấy tên đăng nhập hiện tại
+
+            var donHangList = _context.DonHang
+                .Where(d => d.TenDangNhap == username) // lọc theo tên đăng nhập
+                .OrderByDescending(d => d.NgayDat)
+                .ToList();
+
+            return View(donHangList);
         }
 
 

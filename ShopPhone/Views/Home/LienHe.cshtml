@@ -22,9 +22,10 @@
 
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label">Email</label>
-                            <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ email" />
+                            <input asp-for="Email" class="form-control" placeholder="Email của bạn" value="@Model.Email" readonly />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
+
 
                         <div class="mb-3">
                             <label asp-for="NoiDung" class="form-label">Nội dung</label>

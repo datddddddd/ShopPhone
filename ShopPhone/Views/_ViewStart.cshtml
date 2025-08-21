@@ -1,3 +1,4 @@
 ﻿@{
-    Layout = "_Layout";
+    var role = Context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    Layout = role == "Admin" ? "~/Views/Shared/_LayoutAdmin.cshtml" : "~/Views/Shared/_Layout.cshtml";
 }

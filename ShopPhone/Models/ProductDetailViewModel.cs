@@ -7,9 +7,11 @@
         public string MoTaDonVi { get; set; }
         public decimal? DonGia { get; set; }
         public bool CoGiamGia => GiamGia.HasValue && GiamGia.Value > 0;
+
         public decimal GiaKhuyenMai => CoGiamGia
                     ? Math.Round(DonGia!.Value * (1 - GiamGia!.Value / 100), 0)
                     : DonGia ?? 0; public decimal? GiamGia { get; set; }
+
         public string Hinh { get; set; }
         public DateTime NgaySX { get; set; }
         public int SoLanXem { get; set; }

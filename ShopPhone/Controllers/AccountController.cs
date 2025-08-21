@@ -9,18 +9,18 @@ using ShopPhone.Models;
 using ShopPhone.Services;
 using System.Security.Claims;
 
-
-
 namespace ShopPhone.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IPasswordHasher<TaiKhoan> _hasher;
+
         public IActionResult Index()
         {
             return View();
         }
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -57,7 +57,6 @@ namespace ShopPhone.Controllers
     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // <- thêm dòng này
 };
 
-
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
@@ -74,8 +73,6 @@ namespace ShopPhone.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
@@ -86,6 +83,7 @@ namespace ShopPhone.Controllers
 
             return RedirectToAction("Login", "Account"); // quay về trang login
         }
+
         //Đăng ký
         [HttpGet]
         public IActionResult Register()
@@ -122,7 +120,7 @@ namespace ShopPhone.Controllers
             TempData["ThongBao"] = "Đăng ký thành công! Bạn có thể đăng nhập ngay";
             return RedirectToAction("Login", "Account");
         }
-       
+
         public async Task<IActionResult> ChiTiet(int id)          // id = MaHH
         {
             var sp = await _context.HangHoa
@@ -144,8 +142,6 @@ namespace ShopPhone.Controllers
             _hasher = hasher;
             _emailSender = emailSender;
         }
-
-
 
         // Giao diện nhập email
         public IActionResult ForgotPassword() => View();
@@ -178,9 +174,6 @@ namespace ShopPhone.Controllers
 
             return RedirectToAction("VerifyOTP");
         }
-
-
-
 
         public IActionResult VerifyOTP() => View();
 

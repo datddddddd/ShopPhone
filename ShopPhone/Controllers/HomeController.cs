@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +51,6 @@ namespace ShopPhone.Controllers
                 GiamGia = p.GiamGia,
                 SoLanXem = p.SoLanXem,
                 NgaySX = p.NgaySX,
-                
             }).ToList();
 
             // LẤY SẢN PHẨM NỔI BẬT (ví dụ: GiamGia > 0 hoặc SoLanXem cao)
@@ -73,11 +70,11 @@ namespace ShopPhone.Controllers
                 SoTrang = (int)Math.Ceiling((double)totalProducts / pageSize),
                 TongSoSanPham = totalProducts,
                 SanPhamNoiBat = sanPhamNoiBat
-
             };
 
             return View(vm);
         }
+
         [Authorize(Roles = "Admin")]
         public IActionResult QuanLyDonHang()
         {
@@ -112,7 +109,7 @@ namespace ShopPhone.Controllers
         }
 
         // Cho phép truy cập ẩn danh nếu toàn bộ controller đang [Authorize]
-        
+
         public IActionResult GioiThieu()
         {
             return View();
@@ -170,9 +167,8 @@ namespace ShopPhone.Controllers
             ViewBag.MaNCCList = GetMaNCCList();
             ViewBag.DsMaLoai = GetDsMaLoai();
 
-            return View(hangHoa); 
+            return View(hangHoa);
         }
-
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
@@ -240,8 +236,6 @@ namespace ShopPhone.Controllers
                     sp.HinhThucTe = hangHoa.HinhThucTe; // giữ ảnh cũ
                 }
 
-
-
                 // Lưu vào database
                 _context.Update(sp);
                 await _context.SaveChangesAsync();
@@ -271,6 +265,7 @@ namespace ShopPhone.Controllers
 
             return View(user); // truyền model TaiKhoan sang View
         }
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(TaiKhoan model)
@@ -351,9 +346,8 @@ namespace ShopPhone.Controllers
 
             TempData["SuccessMessage"] = "Đã xóa sản phẩm thành công!";
 
-            return RedirectToAction("Index", "Home"); 
+            return RedirectToAction("Index", "Home");
         }
-
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -425,7 +419,6 @@ namespace ShopPhone.Controllers
                     hangHoa.HinhMoHop = fileName;
                 }
 
-
                 // Lưu hình thực tế
                 if (FileHinhThucTe != null && FileHinhThucTe.Length > 0)
                 {
@@ -482,6 +475,7 @@ namespace ShopPhone.Controllers
 
             return View(hangHoa);
         }
+
         // Hàm lấy danh sách nhà cung cấp
         private List<SelectListItem> GetMaNCCList()
         {
@@ -514,7 +508,5 @@ namespace ShopPhone.Controllers
         new SelectListItem { Value = "1008", Text = "1008 - Phụ Kiện" }
     };
         }
-
     }
-
 }

@@ -23,7 +23,7 @@ builder.Services.AddScoped<IPasswordHasher<TaiKhoan>, PasswordHasher<TaiKhoan>>(
 // Thiết lập quên mật khẩu gửi OTP vê
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
-// Phân quyền truy cập 
+// Phân quyền truy cập
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using ShopPhone.Models;
 using ShopPhone.Services;
@@ -108,7 +109,7 @@ namespace ShopPhone.Controllers
             {
                 HoTen = model.HoTen,
                 Email = model.Email,
-                MatKhau = _hasher.HashPassword(null!, model.Password),
+                MatKhau = _hasher.HashPassword(null!, model.Password), // băm mật khẩu trong trang đăng ký
                 VaiTro = "User",
                 NgayTao = DateTime.Now
             };
@@ -134,6 +135,7 @@ namespace ShopPhone.Controllers
         // gửi otp về gmail
         private readonly EmailSender _emailSender;
 
+        //Băm mã hóa mật khẩu
         public AccountController(ApplicationDbContext context, IPasswordHasher<TaiKhoan> hasher, EmailSender emailSender)
         {
             _context = context;
@@ -191,17 +193,41 @@ namespace ShopPhone.Controllers
             return View(model);
         }
 
-        public IActionResult ResetPassword() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> ResetPassword(string password)
+        public IActionResult ResetPassword()
         {
-            string email = TempData["Email"] as string;
+            return View();
+        }
 
-            // TODO: Tìm user theo email, cập nhật mật khẩu mới (nên hash)
+        // POST: ResetPassword
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            string? email = TempData["Email"] as string;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("", "Không tìm thấy email để đặt lại mật khẩu.");
+                return View(model);
+            }
+
+            var user = await _context.TaiKhoan.FirstOrDefaultAsync(x => x.Email == email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Không tìm thấy tài khoản.");
+                return View(model);
+            }
+
+            // Mã hóa mật khẩu mới
+            user.MatKhau = _hasher.HashPassword(user, model.Password);
+
+            await _context.SaveChangesAsync();
 
             TempData["Success"] = "Mật khẩu đã được cập nhật!";
             return RedirectToAction("Login", "Account");
         }
+
     }
 }

@@ -101,6 +101,13 @@
     <!-- LEFT -->
     <div class="login-left">
         <div class="login-form">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
             <h2>Trang đăng nhập</h2>
             <p>Vui lòng nhập địa chỉ email và mật khẩu để đăng nhập vào Shop Phone.</p>
 

@@ -67,12 +67,17 @@
     <p><strong>Sản xuất:</strong> @Model.NgaySX.ToString("dd/MM/yyyy")</p>
     <p><strong>Lượt xem:</strong> @Model.SoLanXem</p>
     <p class="text-muted"><strong>Mô tả ngắn:</strong> @Model.MoTa</p>
-    <form asp-controller="GioHang" asp-action="MuaNgay" method="post" style="display:inline">
+<div class="d-flex">
+    <form asp-controller="GioHang" asp-action="MuaNgay" method="post" class="me-2">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="maHH" value="@Model.MaHH" />
+        <input type="hidden" name="soLuong" value="1" />
         <button type="submit" class="btn btn-danger">Mua ngay</button>
     </form>
-    <a class="btn btn-outline-primary ms-2">Trả góp 0%</a>
+
+    <a href="#" class="btn btn-outline-primary">Trả góp 0%</a>
 </div>
+
 
     </div>
 

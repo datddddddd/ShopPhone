@@ -1,0 +1,34 @@
+﻿@model IEnumerable<ShopPhone.Models.DonHang>
+
+<h2>📄 Lịch sử đơn hàng của bạn</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DonHangId</td>
+                <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
+                <td>@item.TongTien.ToString("N0") đ</td>
+                <td>
+                    @if (item.DaXacNhan)
+                    {
+                        <span class="badge bg-success">Đã xác nhận</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Chờ xác nhận</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

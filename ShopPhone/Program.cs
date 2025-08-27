@@ -17,6 +17,7 @@ builder.Services.AddScoped<EmailSender>();
 // 🔧 Thêm dòng này để kích hoạt dịch vụ Session
 builder.Services.AddSession();
 
+//đăng ký dịch vụ (Service Registration) trong ASP.NET Core Dependency Injection container.
 builder.Services.AddScoped<IPasswordHasher<TaiKhoan>, PasswordHasher<TaiKhoan>>();
 
 // Thiết lập quên mật khẩu gửi OTP vê

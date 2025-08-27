@@ -238,6 +238,72 @@ namespace ShopPhone.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MuaNgay(int maHH, int soLuong = 1, bool baoHanh1 = false, bool baoHanh2 = false)
+        {
+            var userName = User.Identity?.Name;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Tìm giỏ hàng của user
+            var gioHang = await _context.GioHangDb
+                .FirstOrDefaultAsync(x => x.MaNguoiDung == userId);
+
+            if (gioHang == null)
+            {
+                gioHang = new GioHangDb
+                {
+                    MaNguoiDung = userId,
+                    TenDangNhap = userName,
+                    NgayTao = DateTime.Now
+                };
+                _context.GioHangDb.Add(gioHang);
+                await _context.SaveChangesAsync();
+            }
+
+            // Tìm chi tiết sản phẩm trong giỏ
+            var chiTiet = await _context.GioHangChiTietDb
+                .FirstOrDefaultAsync(x =>
+                    x.GioHangDbId == gioHang.Id &&
+                    x.MaHH == maHH &&
+                    x.BaoHanh1 == baoHanh1 &&
+                    x.BaoHanh2 == baoHanh2
+                );
+
+            if (chiTiet != null)
+            {
+                chiTiet.SoLuong += soLuong;
+            }
+            else
+            {
+                var hang = await _context.HangHoa.FindAsync(maHH);
+                if (hang != null)
+                {
+                    chiTiet = new GioHangChiTietDb
+                    {
+                        GioHangDbId = gioHang.Id,
+                        MaHH = maHH,
+                        SoLuong = soLuong,
+                        DonGia = hang.DonGia ?? 0,
+                        GiamGia = 0,
+                        BaoHanh1 = baoHanh1,
+                        BaoHanh2 = baoHanh2
+                    };
+                    _context.GioHangChiTietDb.Add(chiTiet);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CapNhatBaoHanh([FromBody] CapNhatBaoHanh model)
         {
             var chiTiet = await _context.GioHangChiTietDb

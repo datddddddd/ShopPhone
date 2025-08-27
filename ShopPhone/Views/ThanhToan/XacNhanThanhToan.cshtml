@@ -11,7 +11,7 @@
         display: flex;
         align-items: center;
     }
-    
+
     .success-card {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -21,14 +21,14 @@
         overflow: hidden;
         text-align: center;
     }
-    
+
     .success-header {
         background: linear-gradient(45deg, #11998e, #38ef7d);
         color: white;
         padding: 3rem 2rem;
         position: relative;
     }
-    
+
     .success-icon {
         width: 100px;
         height: 100px;
@@ -42,17 +42,25 @@
         color: #11998e;
         animation: successPulse 2s infinite;
     }
-    
-    @keyframes successPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+
+    @@keyframes successPulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
-    
+
     .success-content {
         padding: 2rem;
     }
-    
+
     .order-details {
         background: #f8f9fa;
         border-radius: 15px;
@@ -60,7 +68,7 @@
         margin: 1.5rem 0;
         text-align: left;
     }
-    
+
     .detail-row {
         display: flex;
         justify-content: space-between;
@@ -68,14 +76,14 @@
         padding: 0.5rem 0;
         border-bottom: 1px solid #e9ecef;
     }
-    
+
     .detail-row:last-child {
         border-bottom: none;
         font-weight: bold;
         font-size: 1.1rem;
         color: #11998e;
     }
-    
+
     .btn-success-custom {
         background: linear-gradient(45deg, #11998e, #38ef7d);
         border: none;
@@ -87,16 +95,16 @@
         transition: all 0.3s ease;
         margin: 0.5rem;
     }
-    
+
     .btn-success-custom:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
     }
-    
+
     .timeline {
         margin: 2rem 0;
     }
-    
+
     .timeline-item {
         display: flex;
         align-items: center;
@@ -106,7 +114,7 @@
         border-radius: 10px;
         border-left: 4px solid #11998e;
     }
-    
+
     .timeline-icon {
         width: 40px;
         height: 40px;
@@ -119,7 +127,7 @@
         margin-right: 1rem;
         flex-shrink: 0;
     }
-    
+
     .confetti {
         position: absolute;
         width: 10px;
@@ -127,12 +135,13 @@
         background: #ffd700;
         animation: confetti-fall 3s linear infinite;
     }
-    
-    @keyframes confetti-fall {
+
+    @@keyframes confetti-fall {
         0% {
             transform: translateY(-100vh) rotate(0deg);
             opacity: 1;
         }
+
         100% {
             transform: translateY(100vh) rotate(720deg);
             opacity: 0;
@@ -152,7 +161,7 @@
                         <h1 class="mb-0">Thanh Toán Thành Công!</h1>
                         <p class="mb-0 mt-2 opacity-75">Cảm ơn bạn đã mua hàng tại Shop Phone</p>
                     </div>
-                    
+
                     <div class="success-content">
                         @if (TempData["ThanhToanThanhCong"] != null)
                         {
@@ -166,27 +175,27 @@
                             <h5 class="mb-3">
                                 <i class="fas fa-receipt me-2"></i>Chi Tiết Đơn Hàng
                             </h5>
-                            
+
                             <div class="detail-row">
                                 <span><i class="fas fa-hashtag me-2"></i>Mã đơn hàng:</span>
                                 <span><strong>SP@DateTime.Now.ToString("yyyyMMddHHmmss")</strong></span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span><i class="fas fa-user me-2"></i>Người nhận:</span>
                                 <span>@Model.HoTen</span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span><i class="fas fa-phone me-2"></i>Số điện thoại:</span>
                                 <span>@Model.SoDienThoai</span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ giao hàng:</span>
                                 <span>@Model.DiaChi, @Model.QuanHuyen, @Model.TinhThanh</span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span><i class="fas fa-truck me-2"></i>Phương thức giao hàng:</span>
                                 <span>
@@ -200,7 +209,7 @@
                                     }
                                 </span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán:</span>
                                 <span>
@@ -221,22 +230,22 @@
                                     }
                                 </span>
                             </div>
-                            
+
                             <hr class="my-3">
-                            
+
                             <div class="detail-row">
                                 <span>Tổng tiền hàng:</span>
                                 <span>@Model.TongTien.ToString("N0") VNĐ</span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span>Phí giao hàng:</span>
-                                <span>@((Model.PhiGiaoHang ?? 0).ToString("N0")) VNĐ</span>
+                                <span>@((Model?.PhiGiaoHang ?? 0).ToString("N0")) VNĐ</span>
                             </div>
-                            
+
                             <div class="detail-row">
                                 <span>Tổng thanh toán:</span>
-                                <span>@((Model.TongTien + (Model.PhiGiaoHang ?? 0)).ToString("N0")) VNĐ</span>
+                                <span>@((Model.TongTien + (Model?.PhiGiaoHang ?? 0)).ToString("N0")) VNĐ</span>
                             </div>
                         </div>
 
@@ -244,7 +253,7 @@
                             <h5 class="mb-3">
                                 <i class="fas fa-clock me-2"></i>Tiến Trình Đơn Hàng
                             </h5>
-                            
+
                             <div class="timeline-item">
                                 <div class="timeline-icon">
                                     <i class="fas fa-check"></i>
@@ -254,17 +263,18 @@
                                     <br><small class="text-muted">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
                                 </div>
                             </div>
-                            
+
                             <div class="timeline-item">
                                 <div class="timeline-icon">
                                     <i class="fas fa-box"></i>
                                 </div>
                                 <div>
                                     <strong>Đang chuẩn bị hàng</strong>
-                                    <br><small class="text-muted">Dự kiến: @DateTime.Now.AddHours(2).ToString("dd/MM/yyyy HH:mm")</small>
+                                    <br><small class="text-muted">Dự kiến:
+                                        @DateTime.Now.AddHours(2).ToString("dd/MM/yyyy HH:mm")</small>
                                 </div>
                             </div>
-                            
+
                             @if (Model.PhuongThucGiaoHangId == 1)
                             {
                                 <div class="timeline-item">
@@ -273,17 +283,19 @@
                                     </div>
                                     <div>
                                         <strong>Đang giao hàng</strong>
-                                        <br><small class="text-muted">Dự kiến: @DateTime.Now.AddDays(1).ToString("dd/MM/yyyy")</small>
+                                        <br><small class="text-muted">Dự kiến:
+                                            @DateTime.Now.AddDays(1).ToString("dd/MM/yyyy")</small>
                                     </div>
                                 </div>
-                                
+
                                 <div class="timeline-item">
                                     <div class="timeline-icon">
                                         <i class="fas fa-home"></i>
                                     </div>
                                     <div>
                                         <strong>Giao hàng thành công</strong>
-                                        <br><small class="text-muted">Dự kiến: @DateTime.Now.AddDays(2).ToString("dd/MM/yyyy")</small>
+                                        <br><small class="text-muted">Dự kiến:
+                                            @DateTime.Now.AddDays(2).ToString("dd/MM/yyyy")</small>
                                     </div>
                                 </div>
                             }
@@ -295,7 +307,8 @@
                                     </div>
                                     <div>
                                         <strong>Sẵn sàng nhận tại shop</strong>
-                                        <br><small class="text-muted">Dự kiến: @DateTime.Now.AddHours(4).ToString("dd/MM/yyyy HH:mm")</small>
+                                        <br><small class="text-muted">Dự kiến:
+                                            @DateTime.Now.AddHours(4).ToString("dd/MM/yyyy HH:mm")</small>
                                     </div>
                                 </div>
                             }
@@ -325,11 +338,11 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Create confetti effect
             function createConfetti() {
                 const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
-                
+
                 for (let i = 0; i < 50; i++) {
                     setTimeout(() => {
                         const confetti = $('<div class="confetti"></div>');
@@ -340,17 +353,17 @@
                             animationDuration: (Math.random() * 3 + 2) + 's'
                         });
                         $('.success-container').append(confetti);
-                        
+
                         setTimeout(() => {
                             confetti.remove();
                         }, 5000);
                     }, i * 100);
                 }
             }
-            
+
             // Start confetti animation
             createConfetti();
-            
+
             // Auto redirect after 30 seconds
             setTimeout(() => {
                 if (confirm('Bạn có muốn về trang chủ không?')) {

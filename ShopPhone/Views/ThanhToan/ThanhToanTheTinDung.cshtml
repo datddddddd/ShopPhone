@@ -9,7 +9,7 @@
         min-height: 100vh;
         padding: 2rem 0;
     }
-    
+
     .card-payment-card {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -18,7 +18,7 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         overflow: hidden;
     }
-    
+
     .card-header {
         background: linear-gradient(45deg, #1e3c72, #2a5298);
         color: white;
@@ -26,7 +26,7 @@
         text-align: center;
         position: relative;
     }
-    
+
     .card-header::before {
         content: '';
         position: absolute;
@@ -36,7 +36,7 @@
         bottom: 0;
         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
     }
-    
+
     .card-logo {
         width: 80px;
         height: 80px;
@@ -50,7 +50,7 @@
         color: #1e3c72;
         font-weight: bold;
     }
-    
+
     .credit-card-preview {
         width: 100%;
         max-width: 400px;
@@ -63,7 +63,7 @@
         margin: 0 auto 2rem;
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
     }
-    
+
     .credit-card-preview::before {
         content: '';
         position: absolute;
@@ -74,28 +74,28 @@
         background: rgba(255, 255, 255, 0.2);
         border-radius: 8px;
     }
-    
+
     .card-number {
         font-family: 'Courier New', monospace;
         font-size: 1.5rem;
         letter-spacing: 3px;
         margin: 2rem 0 1rem;
     }
-    
+
     .card-details {
         display: flex;
         justify-content: space-between;
         align-items: end;
     }
-    
+
     .payment-form {
         padding: 2rem;
     }
-    
+
     .form-group {
         margin-bottom: 1.5rem;
     }
-    
+
     .form-control {
         border: 2px solid #e9ecef;
         border-radius: 15px;
@@ -104,13 +104,13 @@
         transition: all 0.3s ease;
         background: rgba(255, 255, 255, 0.8);
     }
-    
+
     .form-control:focus {
         border-color: #1e3c72;
         box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
         background: white;
     }
-    
+
     .btn-card {
         background: linear-gradient(45deg, #1e3c72, #2a5298);
         border: none;
@@ -123,18 +123,18 @@
         width: 100%;
         font-size: 1.1rem;
     }
-    
+
     .btn-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 15px 30px rgba(30, 60, 114, 0.4);
     }
-    
+
     .card-types {
         display: flex;
         gap: 10px;
         margin-top: 10px;
     }
-    
+
     .card-type {
         width: 40px;
         height: 25px;
@@ -147,7 +147,7 @@
         font-weight: bold;
         color: #6c757d;
     }
-    
+
     .test-info {
         background: rgba(255, 193, 7, 0.1);
         border: 2px solid #ffc107;
@@ -155,7 +155,15 @@
         padding: 1rem;
         margin-bottom: 1.5rem;
     }
-    
+
+    .order-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+
     .security-badge {
         display: flex;
         align-items: center;
@@ -179,7 +187,7 @@
                         <h2 class="mb-0">Thanh Toán Thẻ Tín Dụng</h2>
                         <p class="mb-0 opacity-75">An toàn và bảo mật với SSL</p>
                     </div>
-                    
+
                     <div class="payment-form">
                         <!-- Credit Card Preview -->
                         <div class="credit-card-preview">
@@ -207,7 +215,7 @@
 
                         <form asp-action="XuLyThanhToanTheTinDung" method="post" id="cardForm">
                             @Html.AntiForgeryToken()
-                            
+
                             <!-- Hidden fields để truyền thông tin đơn hàng -->
                             <input type="hidden" asp-for="HoTen" />
                             <input type="hidden" asp-for="SoDienThoai" />
@@ -224,10 +232,8 @@
                                 <label asp-for="SoThe" class="form-label">
                                     <i class="fas fa-credit-card me-2"></i>Số Thẻ *
                                 </label>
-                                <input asp-for="SoThe" class="form-control" 
-                                       placeholder="1234 5678 9012 3456" 
-                                       maxlength="19" 
-                                       required>
+                                <input asp-for="SoThe" class="form-control" placeholder="1234 5678 9012 3456"
+                                    maxlength="19" required>
                                 <div class="card-types">
                                     <div class="card-type">VISA</div>
                                     <div class="card-type">MC</div>
@@ -241,10 +247,8 @@
                                 <label asp-for="ChuThe" class="form-label">
                                     <i class="fas fa-user me-2"></i>Tên Chủ Thẻ *
                                 </label>
-                                <input asp-for="ChuThe" class="form-control" 
-                                       placeholder="NGUYEN VAN A" 
-                                       style="text-transform: uppercase;"
-                                       required>
+                                <input asp-for="ChuThe" class="form-control" placeholder="NGUYEN VAN A"
+                                    style="text-transform: uppercase;" required>
                                 <span asp-validation-for="ChuThe" class="text-danger"></span>
                             </div>
 
@@ -254,23 +258,19 @@
                                         <label asp-for="NgayHetHan" class="form-label">
                                             <i class="fas fa-calendar me-2"></i>Ngày Hết Hạn *
                                         </label>
-                                        <input asp-for="NgayHetHan" class="form-control" 
-                                               placeholder="MM/YY" 
-                                               maxlength="5" 
-                                               required>
+                                        <input asp-for="NgayHetHan" class="form-control" placeholder="MM/YY"
+                                            maxlength="5" required>
                                         <span asp-validation-for="NgayHetHan" class="text-danger"></span>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label asp-for="CVV" class="form-label">
                                             <i class="fas fa-shield-alt me-2"></i>CVV *
                                         </label>
-                                        <input asp-for="CVV" class="form-control" 
-                                               placeholder="123" 
-                                               maxlength="4" 
-                                               required>
+                                        <input asp-for="CVV" class="form-control" placeholder="123" maxlength="4"
+                                            required>
                                         <span asp-validation-for="CVV" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -320,53 +320,53 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Format card number
-            $('#SoThe').on('input', function() {
+            $('#SoThe').on('input', function () {
                 let value = $(this).val().replace(/\D/g, '');
                 let formattedValue = value.replace(/(\d{4})(?=\d)/g, '$1 ');
                 if (formattedValue.length > 19) {
                     formattedValue = formattedValue.substring(0, 19);
                 }
                 $(this).val(formattedValue);
-                
+
                 // Update preview
                 $('#cardNumberPreview').text(formattedValue || '**** **** **** ****');
             });
 
             // Format expiry date
-            $('#NgayHetHan').on('input', function() {
+            $('#NgayHetHan').on('input', function () {
                 let value = $(this).val().replace(/\D/g, '');
                 if (value.length >= 2) {
                     value = value.substring(0, 2) + '/' + value.substring(2, 4);
                 }
                 $(this).val(value);
-                
+
                 // Update preview
                 $('#cardExpiryPreview').text(value || 'MM/YY');
             });
 
             // Format CVV
-            $('#CVV').on('input', function() {
+            $('#CVV').on('input', function () {
                 let value = $(this).val().replace(/\D/g, '');
                 $(this).val(value);
             });
 
             // Update card holder preview
-            $('#ChuThe').on('input', function() {
+            $('#ChuThe').on('input', function () {
                 let value = $(this).val().toUpperCase();
                 $(this).val(value);
                 $('#cardHolderPreview').text(value || 'YOUR NAME');
             });
 
             // Auto-fill test data
-            $('#SoThe').on('focus', function() {
+            $('#SoThe').on('focus', function () {
                 if (!$(this).val()) {
                     $(this).val('4111 1111 1111 1111');
                     $('#ChuThe').val('TEST USER');
                     $('#NgayHetHan').val('12/25');
                     $('#CVV').val('123');
-                    
+
                     // Update previews
                     $('#cardNumberPreview').text('4111 1111 1111 1111');
                     $('#cardHolderPreview').text('TEST USER');
@@ -375,7 +375,7 @@
             });
 
             // Form validation
-            $('#cardForm').on('submit', function(e) {
+            $('#cardForm').on('submit', function (e) {
                 const cardNumber = $('#SoThe').val().replace(/\s/g, '');
                 const cardHolder = $('#ChuThe').val();
                 const expiry = $('#NgayHetHan').val();

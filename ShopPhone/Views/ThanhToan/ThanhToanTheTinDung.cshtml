@@ -287,12 +287,12 @@
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Phí giao hàng:</span>
-                                    <span>@((Model.PhiGiaoHang ?? 0).ToString("N0")) VNĐ</span>
+                                    <span>@((Model?.PhiGiaoHang ?? 0).ToString("N0")) VNĐ</span>
                                 </div>
                                 <hr class="my-3" style="border-color: rgba(255,255,255,0.3);">
                                 <div class="d-flex justify-content-between">
                                     <strong>Tổng thanh toán:</strong>
-                                    <strong>@((Model.TongTien + (Model.PhiGiaoHang ?? 0)).ToString("N0")) VNĐ</strong>
+                                    <strong>@((Model.TongTien + (Model?.PhiGiaoHang ?? 0)).ToString("N0")) VNĐ</strong>
                                 </div>
                             </div>
 

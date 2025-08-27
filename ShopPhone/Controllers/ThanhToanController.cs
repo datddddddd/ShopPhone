@@ -41,7 +41,7 @@ namespace ShopPhone.Controllers
             foreach (var item in gioHang.ChiTietGioHang)
             {
                 var hangHoa = item.HangHoa;
-                decimal giaGoc = hangHoa.GiaGoc;
+                decimal giaGoc = hangHoa.DonGia ?? 0; // Sử dụng DonGia thay vì GiaGoc
                 decimal giamGia = hangHoa.GiamGia ?? 0;
                 decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
@@ -108,7 +108,7 @@ namespace ShopPhone.Controllers
             foreach (var item in gioHang.ChiTietGioHang)
             {
                 var hangHoa = item.HangHoa;
-                decimal giaGoc = hangHoa.GiaGoc;
+                decimal giaGoc = hangHoa.DonGia ?? 0; // Sử dụng DonGia thay vì GiaGoc
                 decimal giamGia = hangHoa.GiamGia ?? 0;
                 decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
@@ -197,7 +197,7 @@ namespace ShopPhone.Controllers
                 foreach (var item in gioHang.ChiTietGioHang)
                 {
                     var hangHoa = item.HangHoa;
-                    decimal giaGoc = hangHoa.GiaGoc;
+                    decimal giaGoc = hangHoa.DonGia ?? 0; // Sử dụng DonGia thay vì GiaGoc
                     decimal giamGia = hangHoa.GiamGia ?? 0;
                     decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
@@ -285,6 +285,111 @@ namespace ShopPhone.Controllers
                 return Json(new { success = false, message = "Phương thức không tồn tại" });
 
             return Json(new { success = true, phiGiaoHang = phuongThuc.PhiGiaoHang });
+        }
+
+        // Trang thanh toán MoMo
+        public IActionResult ThanhToanMoMo(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin cơ bản
+            if (model.TongTien <= 0)
+            {
+                TempData["Loi"] = "Thông tin đơn hàng không hợp lệ!";
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+        // Xử lý thanh toán MoMo
+        [HttpPost]
+        public IActionResult XuLyThanhToanMoMo(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin MoMo
+            if (string.IsNullOrEmpty(model.SoDienThoaiVi) || string.IsNullOrEmpty(model.TenChuVi))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin ví MoMo!");
+                return View("ThanhToanMoMo", model);
+            }
+
+            // Kiểm tra ví MoMo test
+            var vi = _context.ViDienTu.FirstOrDefault(v =>
+                v.SoDienThoai == model.SoDienThoaiVi &&
+                v.TenChuVi == model.TenChuVi);
+
+            if (vi == null)
+            {
+                ModelState.AddModelError("", "Thông tin ví MoMo không hợp lệ!");
+                return View("ThanhToanMoMo", model);
+            }
+
+            // Simulate MoMo payment processing
+            TempData["ThanhToanThanhCong"] = "Thanh toán MoMo thành công!";
+            return RedirectToAction("XacNhanThanhToan", model);
+        }
+
+        // Trang thanh toán thẻ tín dụng
+        public IActionResult ThanhToanTheTinDung(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin cơ bản
+            if (model.TongTien <= 0)
+            {
+                TempData["Loi"] = "Thông tin đơn hàng không hợp lệ!";
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+        // Xử lý thanh toán thẻ tín dụng
+        [HttpPost]
+        public IActionResult XuLyThanhToanTheTinDung(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin thẻ
+            if (string.IsNullOrEmpty(model.SoThe) || string.IsNullOrEmpty(model.ChuThe) ||
+                string.IsNullOrEmpty(model.NgayHetHan) || string.IsNullOrEmpty(model.CVV))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin thẻ tín dụng!");
+                return View("ThanhToanTheTinDung", model);
+            }
+
+            // Kiểm tra thẻ test
+            var theTinDung = _context.TheTinDung.FirstOrDefault(t =>
+                t.SoThe == model.SoThe &&
+                t.ChuThe == model.ChuThe &&
+                t.NgayHetHan == model.NgayHetHan &&
+                t.CVV == model.CVV &&
+                t.HoatDong);
+
+            if (theTinDung == null)
+            {
+                ModelState.AddModelError("", "Thông tin thẻ tín dụng không hợp lệ!");
+                return View("ThanhToanTheTinDung", model);
+            }
+
+            // Simulate card payment processing
+            TempData["ThanhToanThanhCong"] = "Thanh toán thẻ tín dụng thành công!";
+            return RedirectToAction("XacNhanThanhToan", model);
+        }
+
+        // Trang xác nhận thanh toán
+        public IActionResult XacNhanThanhToan(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            return View(model);
         }
 
         private string GenerateTransactionId()

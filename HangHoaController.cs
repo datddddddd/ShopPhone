@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopPhone.Models;
-using ShopPhone.ViewModels;
+using ShopPhone.Models;
 
 [Authorize]
 public class HangHoaController : Controller
@@ -50,8 +50,8 @@ public class HangHoaController : Controller
             MaHH = hanghoa.MaHH,
             TenHH = hanghoa.TenHH,
             MoTaDonVi = hanghoa.MoTaDonVi,
-            DonGia = hanghoa.DonGia ??0,
-            GiamGia = hanghoa.GiamGia ??0,
+            DonGia = hanghoa.DonGia ?? 0,
+            GiamGia = hanghoa.GiamGia ?? 0,
             Hinh = hanghoa.Hinh,
             NgaySX = hanghoa.NgaySX,
             SoLanXem = hanghoa.SoLanXem ?? 0,
@@ -78,7 +78,8 @@ public class HangHoaController : Controller
 
         var kq = _context.HangHoa
             .Where(h => h.TenHH.Contains(query))
-            .Select(h => new {
+            .Select(h => new
+            {
                 h.MaHH,
                 h.TenHH,
                 h.Hinh,
@@ -89,7 +90,7 @@ public class HangHoaController : Controller
         return Json(kq);
     }
 
-  
+
     // GET: HangHoa/Edit/5
     [Authorize(Roles = "Admin")]
     public IActionResult Edit(int id)
@@ -97,6 +98,34 @@ public class HangHoaController : Controller
         var sp = _context.HangHoa.Find(id);
         if (sp == null) return NotFound();
         return View(sp);
+    }
+
+    // POST: HangHoa/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Edit(int id, HangHoa hh)
+    {
+        if (id != hh.MaHH)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _context.Update(hh);
+                _context.SaveChanges();
+                TempData["ThongBao"] = "Cập nhật sản phẩm thành công!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật: " + ex.Message);
+            }
+        }
+        return View(hh);
     }
 
     // GET: HangHoa/Delete/5

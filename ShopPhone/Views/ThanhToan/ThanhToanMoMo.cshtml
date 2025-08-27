@@ -1,0 +1,284 @@
+@model ShopPhone.Models.ThanhToanViewModel
+@{
+    ViewData["Title"] = "Thanh Toán MoMo";
+}
+
+<style>
+    .momo-container {
+        background: linear-gradient(135deg, #d53369 0%, #daae51 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .momo-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+    
+    .momo-header {
+        background: linear-gradient(45deg, #d53369, #cb5aa0);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+    }
+    
+    .momo-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
+    }
+    
+    .momo-logo {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2rem;
+        color: #d53369;
+        font-weight: bold;
+    }
+    
+    .payment-form {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-control:focus {
+        border-color: #d53369;
+        box-shadow: 0 0 0 0.2rem rgba(213, 51, 105, 0.25);
+        background: white;
+    }
+    
+    .btn-momo {
+        background: linear-gradient(45deg, #d53369, #cb5aa0);
+        border: none;
+        border-radius: 25px;
+        padding: 15px 40px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1.1rem;
+    }
+    
+    .btn-momo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(213, 51, 105, 0.4);
+    }
+    
+    .order-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .test-info {
+        background: rgba(255, 193, 7, 0.1);
+        border: 2px solid #ffc107;
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 1rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="momo-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="momo-card">
+                    <div class="momo-header">
+                        <div class="momo-logo">
+                            <i class="fab fa-cc-mastercard"></i>
+                        </div>
+                        <h2 class="mb-0">Thanh Toán MoMo</h2>
+                        <p class="mb-0 opacity-75">Ví điện tử an toàn và tiện lợi</p>
+                    </div>
+                    
+                    <div class="payment-form">
+                        <!-- Thông tin test -->
+                        <div class="test-info">
+                            <h6 class="text-warning mb-2">
+                                <i class="fas fa-info-circle me-2"></i>Thông Tin Test
+                            </h6>
+                            <p class="mb-1"><strong>SĐT:</strong> 0909123456 | <strong>Tên:</strong> Test Momo</p>
+                            <p class="mb-0"><strong>SĐT:</strong> 0912345678 | <strong>Tên:</strong> Demo User</p>
+                        </div>
+
+                        <form asp-action="XuLyThanhToanMoMo" method="post" id="momoForm">
+                            @Html.AntiForgeryToken()
+                            
+                            <!-- Hidden fields để truyền thông tin đơn hàng -->
+                            <input type="hidden" asp-for="HoTen" />
+                            <input type="hidden" asp-for="SoDienThoai" />
+                            <input type="hidden" asp-for="DiaChi" />
+                            <input type="hidden" asp-for="TinhThanh" />
+                            <input type="hidden" asp-for="QuanHuyen" />
+                            <input type="hidden" asp-for="GhiChu" />
+                            <input type="hidden" asp-for="PhuongThucGiaoHangId" />
+                            <input type="hidden" asp-for="PhuongThucThanhToanId" />
+                            <input type="hidden" asp-for="TongTien" />
+                            <input type="hidden" asp-for="PhiGiaoHang" />
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="SoDienThoaiVi" class="form-label">
+                                            <i class="fas fa-mobile-alt me-2"></i>Số Điện Thoại MoMo *
+                                        </label>
+                                        <input asp-for="SoDienThoaiVi" class="form-control" 
+                                               placeholder="Nhập số điện thoại MoMo" 
+                                               pattern="[0-9]{10,11}" 
+                                               required>
+                                        <span asp-validation-for="SoDienThoaiVi" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="TenChuVi" class="form-label">
+                                            <i class="fas fa-user me-2"></i>Tên Chủ Ví *
+                                        </label>
+                                        <input asp-for="TenChuVi" class="form-control" 
+                                               placeholder="Nhập tên chủ ví MoMo" 
+                                               required>
+                                        <span asp-validation-for="TenChuVi" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-shield-alt me-2"></i>Mã PIN MoMo (Tùy chọn)
+                                </label>
+                                <input type="password" class="form-control" 
+                                       placeholder="Nhập mã PIN để bảo mật (demo: 123456)" 
+                                       maxlength="6">
+                                <small class="text-muted">Để trống nếu không muốn nhập PIN</small>
+                            </div>
+
+                            <!-- Tóm tắt đơn hàng -->
+                            <div class="order-summary">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-receipt me-2"></i>Tóm Tắt Đơn Hàng
+                                </h5>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tổng tiền hàng:</span>
+                                    <span>@Model.TongTien.ToString("N0") VNĐ</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Phí giao hàng:</span>
+                                    <span>@((Model.PhiGiaoHang ?? 0).ToString("N0")) VNĐ</span>
+                                </div>
+                                <hr class="my-3" style="border-color: rgba(255,255,255,0.3);">
+                                <div class="d-flex justify-content-between">
+                                    <strong>Tổng thanh toán:</strong>
+                                    <strong>@((Model.TongTien + (Model.PhiGiaoHang ?? 0)).ToString("N0")) VNĐ</strong>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-momo text-white">
+                                    <i class="fas fa-mobile-alt me-2"></i>Thanh Toán Với MoMo
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Quay Lại
+                                </a>
+                            </div>
+
+                            <div class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <span>Giao dịch được bảo mật bởi MoMo SSL</span>
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Format số điện thoại
+            $('#SoDienThoaiVi').on('input', function() {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                $(this).val(value);
+            });
+
+            // Auto-fill test data
+            $('#SoDienThoaiVi').on('focus', function() {
+                if (!$(this).val()) {
+                    $(this).val('0909123456');
+                    $('#TenChuVi').val('Test Momo');
+                }
+            });
+
+            // Form validation
+            $('#momoForm').on('submit', function(e) {
+                const phone = $('#SoDienThoaiVi').val();
+                const name = $('#TenChuVi').val();
+
+                if (!phone || phone.length < 10) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập số điện thoại hợp lệ!');
+                    return false;
+                }
+
+                if (!name || name.trim().length < 2) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập tên chủ ví!');
+                    return false;
+                }
+
+                // Show loading
+                $(this).find('button[type="submit"]').html(
+                    '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...'
+                ).prop('disabled', true);
+            });
+        });
+    </script>
+}

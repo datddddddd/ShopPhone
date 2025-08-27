@@ -1,4 +1,6 @@
-﻿namespace ShopPhone.ViewModels
+﻿using System;
+
+namespace ShopPhone.Models
 {
     public class ProductDetailViewModel
     {
@@ -8,9 +10,11 @@
         public decimal? DonGia { get; set; }
         public bool CoGiamGia => GiamGia.HasValue && GiamGia.Value > 0;
 
+        public decimal? GiamGia { get; set; }
+
         public decimal GiaKhuyenMai => CoGiamGia
                     ? Math.Round(DonGia!.Value * (1 - GiamGia!.Value / 100), 0)
-                    : DonGia ?? 0; public decimal? GiamGia { get; set; }
+                    : DonGia ?? 0;
 
         public string Hinh { get; set; }
         public DateTime NgaySX { get; set; }

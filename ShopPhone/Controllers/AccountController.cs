@@ -43,8 +43,30 @@ namespace ShopPhone.Controllers
                 return View("~/Views/account/Login.cshtml", model);
             }
 
-            var result = _hasher.VerifyHashedPassword(null!, user.MatKhau, model.Password);
-            if (result != PasswordVerificationResult.Success)
+            // Kiểm tra mật khẩu - hỗ trợ cả plain text và hashed password
+            bool isPasswordValid = false;
+
+            // Nếu mật khẩu trong DB là plain text (cho demo)
+            if (user.MatKhau == model.Password)
+            {
+                isPasswordValid = true;
+            }
+            else
+            {
+                // Nếu mật khẩu đã được hash
+                try
+                {
+                    var result = _hasher.VerifyHashedPassword(null!, user.MatKhau, model.Password);
+                    isPasswordValid = (result == PasswordVerificationResult.Success);
+                }
+                catch (FormatException)
+                {
+                    // Nếu có lỗi Base64, có thể mật khẩu là plain text
+                    isPasswordValid = (user.MatKhau == model.Password);
+                }
+            }
+
+            if (!isPasswordValid)
             {
                 ModelState.AddModelError("", "Sai mật khẩu.");
                 return View("~/Views/account/Login.cshtml", model);

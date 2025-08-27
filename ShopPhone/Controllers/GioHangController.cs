@@ -102,12 +102,18 @@ namespace ShopPhone.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemVaoGio([FromBody] ThemVaoGioModel model)
         {
+            // Kiểm tra đăng nhập
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new { success = false, message = "Bạn cần đăng nhập." });
+            }
+
             var userName = User.Identity.Name;
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId == null)
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userName))
             {
-                return Json(new { success = false, message = "Bạn cần đăng nhập." });
+                return Json(new { success = false, message = "Lỗi xác thực người dùng." });
             }
 
             // ✔ Tìm giỏ hàng theo userId chứ KHÔNG chỉ theo userName

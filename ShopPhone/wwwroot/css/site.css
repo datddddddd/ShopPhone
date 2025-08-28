@@ -24,7 +24,7 @@ body {
 .btn-link.nav-link:focus,
 .form-control:focus,
 .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem #fff, 0 0 0 0.25rem #d70018;
+    box-shadow: 0 0 0 0.1rem #fff, 0 0 0 0.25rem var(--primary-red);
 }
 
 /* ========== PRODUCT CARD ========== */
@@ -42,8 +42,9 @@ body {
 }
 
     .product-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px var(--shadow-light);
+        border-color: var(--primary-red);
     }
 
 .product-img {
@@ -151,28 +152,38 @@ input::placeholder {
 }
 
 .btn-danger-custom {
-    background-color: #d70018;
-    border-color: #d70018;
+    background: var(--red-gradient-primary);
+    border: none;
     color: #fff;
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 8px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px var(--shadow-light);
 }
 
     .btn-danger-custom:hover {
-        background-color: #b50014;
-        border-color: #b50014;
+        background: var(--red-gradient-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-medium);
+        color: #fff;
     }
 
 .btn-outline-danger-custom {
-    border: 1px solid #d70018;
-    color: #d70018;
+    border: 2px solid var(--primary-red);
+    color: var(--primary-red);
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 8px;
+    padding: 10px 22px;
+    background: transparent;
+    transition: all 0.3s ease;
 }
 
     .btn-outline-danger-custom:hover {
-        background-color: #d70018;
+        background: var(--primary-red);
         color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-light);
     }
 
 .btn-sm {

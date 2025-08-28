@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using ShopPhone.Models;
 using ShopPhone.Services;
@@ -250,6 +249,5 @@ namespace ShopPhone.Controllers
             TempData["Success"] = "Mật khẩu đã được cập nhật!";
             return RedirectToAction("Login", "Account");
         }
-
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ShopPhone.Models
+﻿namespace ShopPhone.Models
 {
     public class ProductDetailViewModel
     {

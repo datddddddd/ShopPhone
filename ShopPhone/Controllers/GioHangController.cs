@@ -307,7 +307,6 @@ namespace ShopPhone.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CapNhatBaoHanh([FromBody] CapNhatBaoHanh model)

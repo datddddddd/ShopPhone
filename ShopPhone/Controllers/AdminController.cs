@@ -7,6 +7,7 @@ using ShopPhone.Models;
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _context;
+
     public AdminController(ApplicationDbContext context)
     {
         _context = context;
@@ -47,15 +48,19 @@ public class AdminController : Controller
             case "date_asc": // Cũ nhất
                 query = query.OrderBy(d => d.NgayDat);
                 break;
+
             case "date_desc": // Mới nhất
                 query = query.OrderByDescending(d => d.NgayDat);
                 break;
+
             case "total_desc":
                 query = query.OrderByDescending(d => d.TongTien);
                 break;
+
             case "total_asc":
                 query = query.OrderBy(d => d.TongTien);
                 break;
+
             default:
                 query = query.OrderByDescending(d => d.NgayDat);
                 break;
@@ -76,7 +81,6 @@ public class AdminController : Controller
         return View(donHangs);
     }
 
-
     public IActionResult Users()
     {
         return View();
@@ -86,6 +90,7 @@ public class AdminController : Controller
     {
         return View();
     }
+
     [HttpPost]
     public IActionResult XacNhanDonHang(int id)
     {
@@ -111,6 +116,7 @@ public class AdminController : Controller
         var feedbacks = await _context.LienHe.OrderByDescending(f => f.NgayGui).ToListAsync();
         return View(feedbacks);
     }
+
     public IActionResult Statistics()
     {
         // Lọc các đơn hàng đã xác nhận (DaXacNhan == true)
@@ -136,5 +142,4 @@ public class AdminController : Controller
 
         return View(donHangDaXacNhan);
     }
-
 }

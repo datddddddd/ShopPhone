@@ -36,10 +36,10 @@ namespace ShopPhone.Models
         public int PhuongThucThanhToanId { get; set; }
 
         // Thông tin thẻ tín dụng (chỉ khi chọn thanh toán bằng thẻ)
-        [StringLength(16)]
+        [StringLength(19)] // Cho phép format "1234 5678 9012 3456"
         public string SoThe { get; set; }
 
-        [StringLength(50)]
+        [StringLength(100)]
         public string ChuThe { get; set; }
 
         [StringLength(5)]
@@ -48,9 +48,13 @@ namespace ShopPhone.Models
         [StringLength(4)]
         public string CVV { get; set; }
 
+        // Thông tin ngân hàng
+        public int? NganhangId { get; set; }
+
         // Thông tin ví điện tử (chỉ khi chọn MoMo)
         [StringLength(20)]
         public string SoDienThoaiVi { get; set; }
+
         [StringLength(100)]
         public string TenChuVi { get; set; }
 

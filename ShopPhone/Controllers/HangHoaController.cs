@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopPhone.Models;
-using ShopPhone.ViewModels;
 
 [Authorize]
 public class HangHoaController : Controller
@@ -99,6 +98,34 @@ public class HangHoaController : Controller
         var sp = _context.HangHoa.Find(id);
         if (sp == null) return NotFound();
         return View(sp);
+    }
+
+    // POST: HangHoa/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Edit(int id, HangHoa hh)
+    {
+        if (id != hh.MaHH)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _context.Update(hh);
+                _context.SaveChanges();
+                TempData["ThongBao"] = "Cập nhật sản phẩm thành công!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật: " + ex.Message);
+            }
+        }
+        return View(hh);
     }
 
     // GET: HangHoa/Delete/5

@@ -41,7 +41,7 @@ namespace ShopPhone.Controllers
             foreach (var item in gioHang.ChiTietGioHang)
             {
                 var hangHoa = item.HangHoa;
-                decimal giaGoc = hangHoa.GiaGoc;
+                decimal giaGoc = hangHoa.DonGia ?? 0; // Sử dụng DonGia thay vì GiaGoc
                 decimal giamGia = hangHoa.GiamGia ?? 0;
                 decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
@@ -108,7 +108,7 @@ namespace ShopPhone.Controllers
             foreach (var item in gioHang.ChiTietGioHang)
             {
                 var hangHoa = item.HangHoa;
-                decimal giaGoc = hangHoa.GiaGoc;
+                decimal giaGoc = hangHoa.DonGia ?? 0; // Sử dụng DonGia thay vì GiaGoc
                 decimal giamGia = hangHoa.GiamGia ?? 0;
                 decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
@@ -197,7 +197,7 @@ namespace ShopPhone.Controllers
                 foreach (var item in gioHang.ChiTietGioHang)
                 {
                     var hangHoa = item.HangHoa;
-                    decimal giaGoc = hangHoa.GiaGoc;
+                    decimal giaGoc = hangHoa.DonGia ?? 0; // Sử dụng DonGia thay vì GiaGoc
                     decimal giamGia = hangHoa.GiamGia ?? 0;
                     decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
 
@@ -285,6 +285,229 @@ namespace ShopPhone.Controllers
                 return Json(new { success = false, message = "Phương thức không tồn tại" });
 
             return Json(new { success = true, phiGiaoHang = phuongThuc.PhiGiaoHang });
+        }
+
+        // Trang thanh toán MoMo
+        public IActionResult ThanhToanMoMo(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin cơ bản
+            if (model.TongTien <= 0)
+            {
+                TempData["Loi"] = "Thông tin đơn hàng không hợp lệ!";
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+        // Xử lý thanh toán MoMo
+        [HttpPost]
+        public IActionResult XuLyThanhToanMoMo(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin MoMo
+            if (string.IsNullOrEmpty(model.SoDienThoaiVi) || string.IsNullOrEmpty(model.TenChuVi))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin ví MoMo!");
+                return View("ThanhToanMoMo", model);
+            }
+
+            // Kiểm tra ví MoMo test
+            var vi = _context.ViDienTu.FirstOrDefault(v =>
+                v.SoDienThoai == model.SoDienThoaiVi &&
+                v.TenChuVi == model.TenChuVi);
+
+            if (vi == null)
+            {
+                ModelState.AddModelError("", "Thông tin ví MoMo không hợp lệ!");
+                return View("ThanhToanMoMo", model);
+            }
+
+            // Simulate MoMo payment processing
+            TempData["ThanhToanThanhCong"] = "Thanh toán MoMo thành công!";
+            return RedirectToAction("XacNhanThanhToan", model);
+        }
+
+        // Trang thanh toán thẻ tín dụng
+        public IActionResult ThanhToanTheTinDung(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin cơ bản
+            if (model.TongTien <= 0)
+            {
+                TempData["Loi"] = "Thông tin đơn hàng không hợp lệ!";
+                return RedirectToAction("Index");
+            }
+
+            // Load danh sách ngân hàng
+            ViewBag.DanhSachNganHang = _context.NganHang.Where(n => n.HoatDong).OrderBy(n => n.ThuTu).ToList();
+
+            return View(model);
+        }
+
+        // Xử lý thanh toán thẻ tín dụng
+        [HttpPost]
+        public IActionResult XuLyThanhToanTheTinDung(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            // Validate thông tin thẻ
+            if (string.IsNullOrEmpty(model.SoThe) || string.IsNullOrEmpty(model.ChuThe) ||
+                string.IsNullOrEmpty(model.NgayHetHan) || string.IsNullOrEmpty(model.CVV))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin thẻ tín dụng!");
+                return View("ThanhToanTheTinDung", model);
+            }
+
+            // Kiểm tra thẻ test (loại bỏ dấu cách trong số thẻ)
+            var soTheClean = model.SoThe?.Replace(" ", "");
+            var theTinDung = _context.TheTinDung.FirstOrDefault(t =>
+                t.SoThe == soTheClean &&
+                t.ChuThe == model.ChuThe &&
+                t.NgayHetHan == model.NgayHetHan &&
+                t.CVV == model.CVV &&
+                t.HoatDong);
+
+            if (theTinDung == null)
+            {
+                ModelState.AddModelError("", "Thông tin thẻ tín dụng không hợp lệ!");
+                return View("ThanhToanTheTinDung", model);
+            }
+
+            // Tạo đơn hàng thực sự
+            try
+            {
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdString, out int userId))
+                    return RedirectToAction("Login", "Account");
+
+                // Lấy giỏ hàng
+                var gioHang = _context.GioHangDb
+                    .Include(g => g.ChiTietGioHang)
+                    .ThenInclude(c => c.HangHoa)
+                    .FirstOrDefault(g => g.MaNguoiDung == userIdString);
+
+                if (gioHang == null || !gioHang.ChiTietGioHang.Any())
+                {
+                    TempData["Loi"] = "Giỏ hàng trống!";
+                    return RedirectToAction("Index");
+                }
+
+                // Tính tổng tiền
+                decimal tongTien = 0;
+                foreach (var item in gioHang.ChiTietGioHang)
+                {
+                    var hangHoa = item.HangHoa;
+                    decimal giaGoc = hangHoa.DonGia ?? 0;
+                    decimal giamGia = hangHoa.GiamGia ?? 0;
+                    decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
+
+                    decimal tienBH = 0;
+                    if (item.BaoHanh1) tienBH += 990_000;
+                    if (item.BaoHanh2) tienBH += 1_300_000;
+
+                    decimal donGia = giaSauGiam + tienBH;
+                    tongTien += donGia * item.SoLuong;
+                }
+
+                // Lấy phí giao hàng
+                var phuongThucGiaoHang = _context.PhuongThucGiaoHang.Find(model.PhuongThucGiaoHangId);
+                decimal phiGiaoHang = phuongThucGiaoHang?.PhiGiaoHang ?? 0;
+                decimal tongTienSauPhiGiaoHang = tongTien + phiGiaoHang;
+
+                // Tạo đơn hàng
+                var donHang = new DonHang
+                {
+                    TaiKhoanId = userId,
+                    TenDangNhap = User.Identity.Name,
+                    NgayDat = DateTime.Now,
+                    TongTien = tongTien,
+                    TrangThai = "Chờ xác nhận",
+                    PhuongThucThanhToanId = model.PhuongThucThanhToanId,
+                    PhuongThucGiaoHangId = model.PhuongThucGiaoHangId,
+                    PhiGiaoHang = phiGiaoHang,
+                    TongTienSauPhiGiaoHang = tongTienSauPhiGiaoHang,
+                    MaGiaoDich = GenerateTransactionId(),
+                    TrangThaiThanhToan = "Đã thanh toán",
+                    NgayThanhToan = DateTime.Now
+                };
+
+                _context.DonHang.Add(donHang);
+                _context.SaveChanges();
+
+                // Tạo thông tin giao hàng
+                var thongTinGiaoHang = new ThongTinGiaoHang
+                {
+                    DonHangId = donHang.DonHangId,
+                    HoTen = model.HoTen,
+                    SoDienThoai = model.SoDienThoai,
+                    DiaChi = model.DiaChi,
+                    TinhThanh = model.TinhThanh,
+                    QuanHuyen = model.QuanHuyen,
+                    GhiChu = model.GhiChu
+                };
+
+                _context.ThongTinGiaoHang.Add(thongTinGiaoHang);
+
+                // Tạo chi tiết đơn hàng
+                foreach (var item in gioHang.ChiTietGioHang)
+                {
+                    var hangHoa = item.HangHoa;
+                    decimal giaGoc = hangHoa.DonGia ?? 0;
+                    decimal giamGia = hangHoa.GiamGia ?? 0;
+                    decimal giaSauGiam = giaGoc * (1 - giamGia / 100);
+
+                    decimal tienBH = 0;
+                    if (item.BaoHanh1) tienBH += 990_000;
+                    if (item.BaoHanh2) tienBH += 1_300_000;
+
+                    decimal donGia = giaSauGiam + tienBH;
+                    decimal thanhTien = donGia * item.SoLuong;
+
+                    var chiTiet = new ChiTietDonHang
+                    {
+                        DonHangId = donHang.DonHangId,
+                        MaHH = item.MaHH,
+                        SoLuong = item.SoLuong,
+                        DonGia = donGia,
+                        ThanhTien = thanhTien,
+                        BaoHanh1 = item.BaoHanh1,
+                        BaoHanh2 = item.BaoHanh2
+                    };
+
+                    _context.ChiTietDonHang.Add(chiTiet);
+                }
+
+                // Xóa giỏ hàng
+                _context.GioHangChiTietDb.RemoveRange(gioHang.ChiTietGioHang);
+                _context.SaveChanges();
+
+                TempData["ThanhToanThanhCong"] = "Thanh toán thẻ tín dụng thành công!";
+                return RedirectToAction("ThanhCong", new { id = donHang.DonHangId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Loi"] = $"Lỗi khi xử lý thanh toán: {ex.Message}";
+                ViewBag.DanhSachNganHang = _context.NganHang.Where(n => n.HoatDong).OrderBy(n => n.ThuTu).ToList();
+                return View("ThanhToanTheTinDung", model);
+            }
+        }
+
+        // Trang xác nhận thanh toán
+        public IActionResult XacNhanThanhToan(ThanhToanViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+
+            return View(model);
         }
 
         private string GenerateTransactionId()

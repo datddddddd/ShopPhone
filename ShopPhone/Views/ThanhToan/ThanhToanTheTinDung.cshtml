@@ -1,0 +1,666 @@
+@model ShopPhone.Models.ThanhToanViewModel
+@{
+    ViewData["Title"] = "Thanh Toán Thẻ Tín Dụng";
+}
+
+<style>
+    .card-container {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .card-payment-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(215, 0, 24, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: var(--red-gradient-primary);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
+    }
+
+    .card-logo {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2rem;
+        color: #667eea;
+        font-weight: bold;
+    }
+
+    .credit-card-preview {
+        width: 100%;
+        max-width: 400px;
+        height: 250px;
+        background: var(--red-gradient-primary);
+        border-radius: 20px;
+        padding: 2rem;
+        color: white;
+        position: relative;
+        margin: 0 auto 2rem;
+        box-shadow: 0 15px 35px var(--shadow-dark);
+        transition: all 0.3s ease;
+    }
+
+    .bank-card {
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .bank-card:hover {
+        border-color: var(--primary-red);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px var(--shadow-light);
+    }
+
+    .bank-card.selected {
+        border-color: var(--primary-red);
+        background: linear-gradient(135deg, rgba(215, 0, 24, 0.05) 0%, rgba(225, 12, 0, 0.05) 100%);
+        color: var(--primary-red);
+        box-shadow: 0 10px 30px var(--shadow-medium);
+    }
+
+    .bank-logo {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-red);
+    }
+
+    .bank-card.selected .bank-logo {
+        color: var(--primary-red);
+    }
+
+    .bank-logo img {
+        max-width: 60px;
+        max-height: 40px;
+        object-fit: contain;
+    }
+
+    .bank-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .card-type {
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+
+    .credit-card-preview::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 60px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+    }
+
+    .card-number {
+        font-family: 'Courier New', monospace;
+        font-size: 1.5rem;
+        letter-spacing: 3px;
+        margin: 2rem 0 1rem;
+    }
+
+    .card-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+    }
+
+    .payment-form {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 15px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+    }
+
+    .btn-card {
+        background: var(--red-gradient-primary);
+        border: none;
+        border-radius: 25px;
+        padding: 15px 40px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px var(--shadow-light);
+    }
+
+    .btn-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px var(--shadow-medium);
+    }
+
+    .card-types {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .card-type {
+        width: 40px;
+        height: 25px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    .test-info {
+        background: rgba(255, 193, 7, 0.1);
+        border: 2px solid #ffc107;
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .order-summary {
+        background: var(--red-gradient-primary);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+        box-shadow: 0 15px 35px var(--shadow-dark);
+    }
+
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 1rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="card-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card-payment-card">
+                    <div class="card-header">
+                        <div class="card-logo">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h2 class="mb-0">Thanh Toán Thẻ Tín Dụng</h2>
+                        <p class="mb-0 opacity-75">An toàn và bảo mật với SSL</p>
+                    </div>
+
+                    <div class="payment-form">
+                        <!-- Credit Card Preview -->
+                        <div class="credit-card-preview" id="creditCardPreview">
+                            <!-- Default card content -->
+                            <div class="card-content" id="defaultCardContent">
+                                <div class="card-number" id="cardNumberPreview">**** **** **** ****</div>
+                                <div class="card-details">
+                                    <div>
+                                        <div style="font-size: 0.8rem; opacity: 0.7;">CARD HOLDER</div>
+                                        <div id="cardHolderPreview">YOUR NAME</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.8rem; opacity: 0.7;">EXPIRES</div>
+                                        <div id="cardExpiryPreview">MM/YY</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bank card image overlay -->
+                            <div class="bank-card-overlay" id="bankCardOverlay"
+                                style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; border-radius: 20px;">
+                                <!-- Text overlay for user input -->
+                                <div class="card-overlay-content"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 0.8rem; opacity: 0.8;">EXPIRES</div>
+                                        <div id="cardExpiryOverlay" style="font-size: 1rem; font-weight: bold;">MM/YY
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div id="cardNumberOverlay"
+                                            style="font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; margin-bottom: 10px;">
+                                            **** **** **** ****</div>
+                                        <div>
+                                            <div style="font-size: 0.8rem; opacity: 0.8;">CARD HOLDER</div>
+                                            <div id="cardHolderOverlay" style="font-size: 1rem; font-weight: bold;">YOUR
+                                                NAME</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chọn ngân hàng -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-university me-2"></i>Chọn Ngân Hàng
+                            </h5>
+                            <div class="row g-3" id="bankSelection">
+                                @if (ViewBag.DanhSachNganHang != null)
+                                {
+                                    @foreach (var bank in (List<ShopPhone.Models.NganHang>)ViewBag.DanhSachNganHang)
+                                    {
+                                        <div class="col-md-4">
+                                            <div class="bank-card"
+                                                onclick="selectBank(@bank.Id, '@bank.TenNganHang', '@bank.LoaiThe', '@bank.MauThe', '@bank.Logo')"
+                                                data-bank-id="@bank.Id" data-card-type="@bank.LoaiThe"
+                                                data-card-color="@bank.MauThe" data-bank-logo="@bank.Logo">
+                                                <div class="bank-logo">
+                                                    @if (!string.IsNullOrEmpty(bank.Logo))
+                                                    {
+                                                        <img src="@bank.Logo" alt="@bank.TenNganHang"
+                                                            style="max-width: 60px; max-height: 40px; object-fit: contain;"
+                                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                                                        <i class="fas fa-university"
+                                                            style="display: none; font-size: 2rem; color: #667eea;"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-university"></i>
+                                                    }
+                                                </div>
+                                                <div class="bank-name">@bank.TenNganHang</div>
+                                                <div class="card-type">@bank.LoaiThe</div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <!-- Default banks nếu chưa có data -->
+                                    <div class="col-md-4">
+                                        <div class="bank-card"
+                                            onclick="selectBank(1, 'Vietcombank', 'Visa', '#007bff', '/Banks/vietcombank.jpg')"
+                                            data-bank-id="1" data-card-type="Visa" data-card-color="#007bff"
+                                            data-bank-logo="/Banks/vietcombank.jpg">
+                                            <div class="bank-logo">
+                                                <img src="/Banks/vietcombank.jpg" alt="Vietcombank"
+                                                    style="max-width: 60px; max-height: 40px;" />
+                                            </div>
+                                            <div class="bank-name">Vietcombank</div>
+                                            <div class="card-type">Visa</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="bank-card"
+                                            onclick="selectBank(2, 'Techcombank', 'MasterCard', '#eb001b', '/Banks/Techcombank.png')"
+                                            data-bank-id="2" data-card-type="MasterCard" data-card-color="#eb001b"
+                                            data-bank-logo="/Banks/Techcombank.png">
+                                            <div class="bank-logo">
+                                                <img src="/Banks/Techcombank.png" alt="Techcombank"
+                                                    style="max-width: 60px; max-height: 40px;" />
+                                            </div>
+                                            <div class="bank-name">Techcombank</div>
+                                            <div class="card-type">MasterCard</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="bank-card"
+                                            onclick="selectBank(3, 'BIDV', 'JCB', '#0066cc', '/Banks/Bidv.jpg')"
+                                            data-bank-id="3" data-card-type="JCB" data-card-color="#0066cc"
+                                            data-bank-logo="/Banks/Bidv.jpg">
+                                            <div class="bank-logo">
+                                                <img src="/Banks/Bidv.jpg" alt="BIDV"
+                                                    style="max-width: 60px; max-height: 40px;" />
+                                            </div>
+                                            <div class="bank-name">BIDV</div>
+                                            <div class="card-type">JCB</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+
+
+                        <form asp-action="XuLyThanhToanTheTinDung" method="post" id="cardForm">
+                            @Html.AntiForgeryToken()
+
+                            <!-- Hidden fields để truyền thông tin đơn hàng -->
+                            <input type="hidden" asp-for="HoTen" />
+                            <input type="hidden" asp-for="SoDienThoai" />
+                            <input type="hidden" asp-for="DiaChi" />
+                            <input type="hidden" asp-for="TinhThanh" />
+                            <input type="hidden" asp-for="QuanHuyen" />
+                            <input type="hidden" asp-for="GhiChu" />
+                            <input type="hidden" asp-for="PhuongThucGiaoHangId" />
+                            <input type="hidden" asp-for="PhuongThucThanhToanId" />
+                            <input type="hidden" asp-for="TongTien" />
+                            <input type="hidden" asp-for="PhiGiaoHang" />
+                            <input type="hidden" asp-for="NganhangId" id="selectedBankId" />
+
+                            <div class="form-group">
+                                <label asp-for="SoThe" class="form-label">
+                                    <i class="fas fa-credit-card me-2"></i>Số Thẻ *
+                                </label>
+                                <input asp-for="SoThe" class="form-control" placeholder="1234 5678 9012 3456"
+                                    maxlength="19" required>
+                                <div class="card-types">
+                                    <div class="card-type">VISA</div>
+                                    <div class="card-type">MC</div>
+                                    <div class="card-type">JCB</div>
+                                    <div class="card-type">AMEX</div>
+                                </div>
+                                <span asp-validation-for="SoThe" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ChuThe" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Tên Chủ Thẻ *
+                                </label>
+                                <input asp-for="ChuThe" class="form-control" placeholder="NGUYEN VAN A"
+                                    style="text-transform: uppercase;" required>
+                                <span asp-validation-for="ChuThe" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="NgayHetHan" class="form-label">
+                                            <i class="fas fa-calendar me-2"></i>Ngày Hết Hạn *
+                                        </label>
+                                        <input asp-for="NgayHetHan" class="form-control" placeholder="MM/YY"
+                                            maxlength="5" required>
+                                        <span asp-validation-for="NgayHetHan" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="CVV" class="form-label">
+                                            <i class="fas fa-shield-alt me-2"></i>CVV *
+                                        </label>
+                                        <input asp-for="CVV" class="form-control" placeholder="123" maxlength="4"
+                                            required>
+                                        <span asp-validation-for="CVV" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tóm tắt đơn hàng -->
+                            <div class="order-summary">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-receipt me-2"></i>Tóm Tắt Đơn Hàng
+                                </h5>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tổng tiền hàng:</span>
+                                    <span>@Model.TongTien.ToString("N0") VNĐ</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Phí giao hàng:</span>
+                                    <span>@((Model?.PhiGiaoHang ?? 0).ToString("N0")) VNĐ</span>
+                                </div>
+                                <hr class="my-3" style="border-color: rgba(255,255,255,0.3);">
+                                <div class="d-flex justify-content-between">
+                                    <strong>Tổng thanh toán:</strong>
+                                    <strong>@((Model.TongTien + (Model?.PhiGiaoHang ?? 0)).ToString("N0")) VNĐ</strong>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-card text-white">
+                                    <i class="fas fa-lock me-2"></i>Thanh Toán An Toàn
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Quay Lại
+                                </a>
+                            </div>
+
+                            <div class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <span>Giao dịch được bảo mật bởi SSL 256-bit</span>
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let selectedBank = null;
+
+        // Function to select bank
+        function selectBank(bankId, bankName, cardType, cardColor, bankLogo) {
+            // Remove selected class from all bank cards
+            $('.bank-card').removeClass('selected');
+
+            // Add selected class to clicked card
+            $(`[data-bank-id="${bankId}"]`).addClass('selected');
+
+            // Store selected bank
+            selectedBank = {
+                id: bankId,
+                name: bankName,
+                cardType: cardType,
+                color: cardColor,
+                logo: bankLogo
+            };
+
+            // Update hidden field
+            $('#selectedBankId').val(bankId);
+
+            // Update credit card preview
+            updateCardPreview();
+        }
+
+        function updateCardPreview() {
+            if (selectedBank && selectedBank.logo) {
+                // Show bank card image as background
+                const bankCardOverlay = $('#bankCardOverlay');
+                const defaultCardContent = $('#defaultCardContent');
+
+                // Hide default card, show bank card image
+                defaultCardContent.hide();
+                bankCardOverlay.show();
+                bankCardOverlay.css('background-image', `url('${selectedBank.logo}')`);
+
+                // Update overlay text with current input values
+                updateOverlayText();
+            } else {
+                // Show default card design
+                const bankCardOverlay = $('#bankCardOverlay');
+                const defaultCardContent = $('#defaultCardContent');
+
+                bankCardOverlay.hide();
+                defaultCardContent.show();
+
+                // Reset to default gradient
+                const cardPreview = $('.credit-card-preview');
+                cardPreview.css('background', 'linear-gradient(45deg, #667eea, #764ba2)');
+            }
+        }
+
+        function updateOverlayText() {
+            // Sync overlay text with input values
+            const cardNumber = $('#SoThe').val() || '**** **** **** ****';
+            const cardHolder = $('#ChuThe').val() || 'YOUR NAME';
+            const cardExpiry = $('#NgayHetHan').val() || 'MM/YY';
+
+            $('#cardNumberOverlay').text(cardNumber);
+            $('#cardHolderOverlay').text(cardHolder.toUpperCase());
+            $('#cardExpiryOverlay').text(cardExpiry);
+        }
+
+        function adjustColor(color, amount) {
+            const usePound = color[0] === "#";
+            const col = usePound ? color.slice(1) : color;
+            const num = parseInt(col, 16);
+            let r = (num >> 16) + amount;
+            let g = (num >> 8 & 0x00FF) + amount;
+            let b = (num & 0x0000FF) + amount;
+            r = r > 255 ? 255 : r < 0 ? 0 : r;
+            g = g > 255 ? 255 : g < 0 ? 0 : g;
+            b = b > 255 ? 255 : b < 0 ? 0 : b;
+            return (usePound ? "#" : "") + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
+        }
+
+        $(document).ready(function () {
+            // Format card number
+            $('#SoThe').on('input', function () {
+                let value = $(this).val().replace(/\D/g, '');
+                let formattedValue = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                if (formattedValue.length > 19) {
+                    formattedValue = formattedValue.substring(0, 19);
+                }
+                $(this).val(formattedValue);
+
+                // Update preview
+                $('#cardNumberPreview').text(formattedValue || '**** **** **** ****');
+                $('#cardNumberOverlay').text(formattedValue || '**** **** **** ****');
+            });
+
+            // Format expiry date
+            $('#NgayHetHan').on('input', function () {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                $(this).val(value);
+
+                // Update preview
+                $('#cardExpiryPreview').text(value || 'MM/YY');
+                $('#cardExpiryOverlay').text(value || 'MM/YY');
+            });
+
+            // Format CVV
+            $('#CVV').on('input', function () {
+                let value = $(this).val().replace(/\D/g, '');
+                $(this).val(value);
+            });
+
+            // Update card holder preview
+            $('#ChuThe').on('input', function () {
+                let value = $(this).val().toUpperCase();
+                $(this).val(value);
+                $('#cardHolderPreview').text(value || 'YOUR NAME');
+                $('#cardHolderOverlay').text(value || 'YOUR NAME');
+            });
+
+            // Auto-fill test data
+            $('#SoThe').on('focus', function () {
+                if (!$(this).val()) {
+                    $(this).val('4111 1111 1111 1111');
+                    $('#ChuThe').val('TEST USER');
+                    $('#NgayHetHan').val('12/25');
+                    $('#CVV').val('123');
+
+                    // Update previews
+                    $('#cardNumberPreview').text('4111 1111 1111 1111');
+                    $('#cardHolderPreview').text('TEST USER');
+                    $('#cardExpiryPreview').text('12/25');
+
+                    // Update overlay previews
+                    $('#cardNumberOverlay').text('4111 1111 1111 1111');
+                    $('#cardHolderOverlay').text('TEST USER');
+                    $('#cardExpiryOverlay').text('12/25');
+                }
+            });
+
+            // Form validation
+            $('#cardForm').on('submit', function (e) {
+                // Validate bank selection
+                if (!selectedBank) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn ngân hàng!');
+                    return false;
+                }
+
+                const cardNumber = $('#SoThe').val().replace(/\s/g, '');
+                const cardHolder = $('#ChuThe').val();
+                const expiry = $('#NgayHetHan').val();
+                const cvv = $('#CVV').val();
+
+                if (cardNumber.length < 13) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập số thẻ hợp lệ!');
+                    return false;
+                }
+
+                if (!cardHolder || cardHolder.trim().length < 2) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập tên chủ thẻ!');
+                    return false;
+                }
+
+                if (!expiry.match(/^\d{2}\/\d{2}$/)) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập ngày hết hạn đúng định dạng MM/YY!');
+                    return false;
+                }
+
+                if (cvv.length < 3) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập CVV hợp lệ!');
+                    return false;
+                }
+
+                // Show loading
+                $(this).find('button[type="submit"]').html(
+                    '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...'
+                ).prop('disabled', true);
+            });
+        });
+    </script>
+}

@@ -21,6 +21,7 @@ namespace ShopPhone.Models
         public DbSet<TheTinDung> TheTinDung { get; set; } = null!;
         public DbSet<ViDienTu> ViDienTu { get; set; } = null!;
         public DbSet<ThongTinGiaoHang> ThongTinGiaoHang { get; set; } = null!;
+        public DbSet<NganHang> NganHang { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

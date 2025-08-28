@@ -1,0 +1,200 @@
+@model ShopPhone.Models.HangHoa
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Thêm Sản Phẩm Mới
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="row">
+                            <!-- Cột trái -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="TenHH" class="form-label">Tên sản phẩm *</label>
+                                    <input asp-for="TenHH" class="form-control" placeholder="Nhập tên sản phẩm">
+                                    <span asp-validation-for="TenHH" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="TenAlias" class="form-label">Tên alias (URL)</label>
+                                    <input asp-for="TenAlias" class="form-control" placeholder="ten-san-pham">
+                                    <small class="form-text text-muted">Để trống sẽ tự động tạo từ tên sản phẩm</small>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="MaLoai" class="form-label">Mã loại *</label>
+                                            <select asp-for="MaLoai" class="form-select">
+                                                <option value="">-- Chọn loại --</option>
+                                                <option value="1">iPhone</option>
+                                                <option value="2">Samsung</option>
+                                                <option value="3">Xiaomi</option>
+                                                <option value="4">OnePlus</option>
+                                                <option value="5">Khác</option>
+                                            </select>
+                                            <span asp-validation-for="MaLoai" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="MoTaDonVi" class="form-label">Đơn vị *</label>
+                                            <input asp-for="MoTaDonVi" class="form-control" placeholder="Chiếc, Cái, Bộ...">
+                                            <span asp-validation-for="MoTaDonVi" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="DonGia" class="form-label">Đơn giá (VNĐ) *</label>
+                                            <input asp-for="DonGia" type="number" class="form-control" min="0" step="1000">
+                                            <span asp-validation-for="DonGia" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="GiamGia" class="form-label">Giảm giá (%)</label>
+                                            <input asp-for="GiamGia" type="number" class="form-control" min="0" max="100" step="0.1">
+                                            <span asp-validation-for="GiamGia" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="NgaySX" class="form-label">Ngày sản xuất *</label>
+                                    <input asp-for="NgaySX" type="date" class="form-control">
+                                    <span asp-validation-for="NgaySX" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Cột phải -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FileHinh" class="form-label">Hình ảnh chính</label>
+                                    <input asp-for="FileHinh" type="file" class="form-control" accept="image/*">
+                                    <small class="form-text text-muted">Chọn file ảnh (JPG, PNG, GIF)</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="FileHinhMoHop" class="form-label">Hình mở hộp</label>
+                                    <input asp-for="FileHinhMoHop" type="file" class="form-control" accept="image/*">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="FileHinhThucTe" class="form-label">Hình thực tế</label>
+                                    <input asp-for="FileHinhThucTe" type="file" class="form-control" accept="image/*">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="VideoId" class="form-label">Video ID (YouTube)</label>
+                                    <input asp-for="VideoId" class="form-control" placeholder="dQw4w9WgXcQ">
+                                    <small class="form-text text-muted">Chỉ nhập ID của video YouTube</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="MaNCC" class="form-label">Mã nhà cung cấp</label>
+                                    <input asp-for="MaNCC" class="form-control" placeholder="APPLE, SAMSUNG...">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="DanhGia" class="form-label">Đánh giá (1-5 sao)</label>
+                                    <input asp-for="DanhGia" type="number" class="form-control" min="1" max="5" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mô tả -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="MoTa" class="form-label">Mô tả sản phẩm</label>
+                                    <textarea asp-for="MoTa" class="form-control" rows="5" 
+                                              placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút hành động -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                                    </a>
+                                    <div>
+                                        <button type="reset" class="btn btn-warning me-2">
+                                            <i class="fas fa-undo me-1"></i>Làm mới
+                                        </button>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save me-1"></i>Lưu sản phẩm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Tự động tạo alias từ tên sản phẩm
+        $('#TenHH').on('input', function() {
+            if ($('#TenAlias').val() === '') {
+                var alias = $(this).val()
+                    .toLowerCase()
+                    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+                    .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+                    .replace(/[ìíịỉĩ]/g, 'i')
+                    .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+                    .replace(/[ùúụủũưừứựửữ]/g, 'u')
+                    .replace(/[ỳýỵỷỹ]/g, 'y')
+                    .replace(/đ/g, 'd')
+                    .replace(/[^a-z0-9]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                $('#TenAlias').val(alias);
+            }
+        });
+
+        // Preview ảnh
+        $('input[type="file"]').on('change', function() {
+            var input = this;
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var preview = $(input).siblings('.image-preview');
+                    if (preview.length === 0) {
+                        preview = $('<img class="image-preview mt-2" style="max-width: 200px; max-height: 200px;">');
+                        $(input).after(preview);
+                    }
+                    preview.attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        });
+
+        // Set ngày hiện tại cho NgaySX nếu chưa có
+        if ($('#NgaySX').val() === '') {
+            $('#NgaySX').val(new Date().toISOString().split('T')[0]);
+        }
+    </script>
+}

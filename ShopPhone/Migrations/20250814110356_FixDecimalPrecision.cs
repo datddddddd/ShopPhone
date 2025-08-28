@@ -52,15 +52,6 @@ namespace ShopPhone.Migrations
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Email",
-                table: "TaiKhoan",
-                type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
             migrationBuilder.AlterColumn<string>(
                 name: "MoTaDonVi",
                 table: "HangHoa",
@@ -200,16 +191,7 @@ namespace ShopPhone.Migrations
                 oldType: "nvarchar(max)",
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Email",
-                table: "TaiKhoan",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
+          
             migrationBuilder.AlterColumn<string>(
                 name: "MoTaDonVi",
                 table: "HangHoa",

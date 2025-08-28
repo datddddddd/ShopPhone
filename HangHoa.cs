@@ -13,7 +13,7 @@ namespace ShopPhone.Models
         public string TenHH { get; set; }
         public string? TenAlias { get; set; }
         public int MaLoai { get; set; }
-        public string MoTaDonVi { get; set; }
+        public string? MoTaDonVi { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Đơn giá phải >= 0")]
         public decimal? DonGia { get; set; }    // giá đã giảm

@@ -123,14 +123,149 @@ namespace ShopPhone.Migrations
                     { 1, "123", "TEST USER", 1000000m, true, "Visa", "12/25", new DateTime(2025, 8, 4, 9, 42, 8, 39, DateTimeKind.Local).AddTicks(8793), "4111111111111111" },
                     { 2, "123", "TEST USER", 1000000m, true, "MasterCard", "12/25", new DateTime(2025, 8, 4, 9, 42, 8, 41, DateTimeKind.Local).AddTicks(3210), "5555555555554444" }
                 });
+
+            migrationBuilder.CreateIndex(
+    name: "IX_ChiTietDonHang_DonHangId",
+    table: "ChiTietDonHang",
+    column: "DonHangId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChiTietDonHang_MaHH",
+                table: "ChiTietDonHang",
+                column: "MaHH");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DonHang_PhuongThucGiaoHangId",
+                table: "DonHang",
+                column: "PhuongThucGiaoHangId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DonHang_PhuongThucThanhToanId",
+                table: "DonHang",
+                column: "PhuongThucThanhToanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GioHangChiTietDb_GioHangDbId",
+                table: "GioHangChiTietDb",
+                column: "GioHangDbId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GioHangChiTietDb_MaHH",
+                table: "GioHangChiTietDb",
+                column: "MaHH");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ThongTinGiaoHang_DonHangId",
+                table: "ThongTinGiaoHang",
+                column: "DonHangId",
+                unique: true);
+
+            // Thêm các cột còn thiếu vào bảng DonHang
+            migrationBuilder.AddColumn<int>(
+                name: "PhuongThucThanhToanId",
+                table: "DonHang",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "MaGiaoDich",
+                table: "DonHang",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "TrangThaiThanhToan",
+                table: "DonHang",
+                type: "nvarchar(max)",
+                nullable: true,
+                defaultValue: "Chưa thanh toán");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "NgayThanhToan",
+                table: "DonHang",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "PhuongThucGiaoHangId",
+                table: "DonHang",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<decimal>(
+                name: "PhiGiaoHang",
+                table: "DonHang",
+                type: "decimal(18,2)",
+                nullable: false,
+                defaultValue: 0m);
+
+            migrationBuilder.AddColumn<decimal>(
+                name: "TongTienSauPhiGiaoHang",
+                table: "DonHang",
+                type: "decimal(18,2)",
+                nullable: false,
+                defaultValue: 0m);
+
+            // Thêm foreign key constraints
+            migrationBuilder.AddForeignKey(
+                name: "FK_DonHang_PhuongThucThanhToan_PhuongThucThanhToanId",
+                table: "DonHang",
+                column: "PhuongThucThanhToanId",
+                principalTable: "PhuongThucThanhToan",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_DonHang_PhuongThucGiaoHang_PhuongThucGiaoHangId",
+                table: "DonHang",
+                column: "PhuongThucGiaoHangId",
+                principalTable: "PhuongThucGiaoHang",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Drop foreign keys trước
+            migrationBuilder.DropForeignKey(
+                name: "FK_DonHang_PhuongThucThanhToan_PhuongThucThanhToanId",
+                table: "DonHang");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_DonHang_PhuongThucGiaoHang_PhuongThucGiaoHangId",
+                table: "DonHang");
+
+            // Drop các cột đã thêm
+            migrationBuilder.DropColumn(
+                name: "PhuongThucThanhToanId",
+                table: "DonHang");
+
+            migrationBuilder.DropColumn(
+                name: "MaGiaoDich",
+                table: "DonHang");
+
+            migrationBuilder.DropColumn(
+                name: "TrangThaiThanhToan",
+                table: "DonHang");
+
+            migrationBuilder.DropColumn(
+                name: "NgayThanhToan",
+                table: "DonHang");
+
+            migrationBuilder.DropColumn(
+                name: "PhuongThucGiaoHangId",
+                table: "DonHang");
+
+            migrationBuilder.DropColumn(
+                name: "PhiGiaoHang",
+                table: "DonHang");
+
+            migrationBuilder.DropColumn(
+                name: "TongTienSauPhiGiaoHang",
+                table: "DonHang");
+
             migrationBuilder.DropTable(
                 name: "TheTinDung");
-           
+
             migrationBuilder.DropTable(
                 name: "PhuongThucGiaoHang");
 

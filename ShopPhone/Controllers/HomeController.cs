@@ -352,32 +352,8 @@ namespace ShopPhone.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
-
         {
-            ViewBag.MaNCCList = new List<SelectListItem>
-{
-    new SelectListItem { Value = "AP", Text = "AP" },
-    new SelectListItem { Value = "MO", Text = "MO" },
-    new SelectListItem { Value = "NK", Text = "NK" },
-    new SelectListItem { Value = "OP", Text = "OP" },
-    new SelectListItem { Value = "PK", Text = "PK" },
-    new SelectListItem { Value = "SM", Text = "SM" },
-    new SelectListItem { Value = "SS", Text = "SS" },
-    new SelectListItem { Value = "XI", Text = "XI" }
-};
-
-            ViewBag.DsMaLoai = new List<SelectListItem>
-    {
-        new SelectListItem { Value = "1000", Text = "1000 - Iphone" },
-        new SelectListItem { Value = "1001", Text = "1001 - SamSung" },
-        new SelectListItem { Value = "1002", Text = "1002 - Oppo" },
-        new SelectListItem { Value = "1003", Text = "1003 - Xiaomi" },
-        new SelectListItem { Value = "1004", Text = "1004 - Vivo" },
-        new SelectListItem { Value = "1005", Text = "1005 - Realme" },
-        new SelectListItem { Value = "1006", Text = "1006 - Honor" },
-        new SelectListItem { Value = "1007", Text = "1007 - Laptop" },
-        new SelectListItem { Value = "1008", Text = "1008 - Phụ Kiện" }
-    };
+            SetViewBagForCreate();
             return View();
         }
 
@@ -390,7 +366,25 @@ namespace ShopPhone.Controllers
             hangHoa.FileHinhMoHop = FileHinhMoHop;
             hangHoa.FileHinhThucTe = FileHinhThucTe;
 
-            if (ModelState.IsValid)
+            // Kiểm tra validation trước
+            if (!ModelState.IsValid)
+            {
+                // Log lỗi validation để debug
+                foreach (var entry in ModelState)
+                {
+                    var key = entry.Key;
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        _logger.LogWarning("❌ ModelState Error: Field '{Field}' - {Error}", key, error.ErrorMessage);
+                    }
+                }
+
+                // Set lại ViewBag và return view với lỗi
+                SetViewBagForCreate();
+                return View(hangHoa);
+            }
+
+            try
             {
                 // Tạo thư mục wwwroot/images nếu chưa có
                 var pathSave = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
@@ -430,50 +424,50 @@ namespace ShopPhone.Controllers
                     }
                     hangHoa.HinhThucTe = fileName;
                 }
+
                 hangHoa.SoLanXem = 0;
                 _context.Add(hangHoa);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Thêm sản phẩm thành công!";
-
                 return RedirectToAction(nameof(Index));
             }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra khi thêm sản phẩm: " + ex.Message);
+                // Log chi tiết lỗi để debug
+                _logger.LogError(ex, "Lỗi khi thêm sản phẩm mới");
+                SetViewBagForCreate();
+                return View(hangHoa);
+            }
+        }
+
+        // Helper method để set ViewBag cho Create action
+        private void SetViewBagForCreate()
+        {
             ViewBag.MaNCCList = new List<SelectListItem>
-{
-    new SelectListItem { Value = "AP", Text = "AP" },
-    new SelectListItem { Value = "MO", Text = "MO" },
-    new SelectListItem { Value = "NK", Text = "NK" },
-    new SelectListItem { Value = "OP", Text = "OP" },
-    new SelectListItem { Value = "PK", Text = "PK" },
-    new SelectListItem { Value = "SM", Text = "SM" },
-    new SelectListItem { Value = "SS", Text = "SS" },
-    new SelectListItem { Value = "XI", Text = "XI" }
-};
+            {
+                new SelectListItem { Value = "AP", Text = "AP" },
+                new SelectListItem { Value = "MO", Text = "MO" },
+                new SelectListItem { Value = "NK", Text = "NK" },
+                new SelectListItem { Value = "OP", Text = "OP" },
+                new SelectListItem { Value = "PK", Text = "PK" },
+                new SelectListItem { Value = "SM", Text = "SM" },
+                new SelectListItem { Value = "SS", Text = "SS" },
+                new SelectListItem { Value = "XI", Text = "XI" }
+            };
 
             ViewBag.DsMaLoai = new List<SelectListItem>
-{
-        new SelectListItem { Value = "1000", Text = "1000 - Iphone" },
-        new SelectListItem { Value = "1001", Text = "1001 - SamSung" },
-        new SelectListItem { Value = "1002", Text = "1002 - Oppo" },
-        new SelectListItem { Value = "1003", Text = "1003 - Xiaomi" },
-        new SelectListItem { Value = "1004", Text = "1004 - Vivo" },
-        new SelectListItem { Value = "1005", Text = "1005 - Realme" },
-        new SelectListItem { Value = "1006", Text = "1006 - Honor" },
-        new SelectListItem { Value = "1007", Text = "1007 - Laptop" },
-        new SelectListItem { Value = "1008", Text = "1008 - Phụ Kiện" }
-};
-            if (!ModelState.IsValid)
             {
-                foreach (var entry in ModelState)
-                {
-                    var key = entry.Key;
-                    foreach (var error in entry.Value.Errors)
-                    {
-                        _logger.LogWarning("❌ ModelState Error: Field '{Field}' - {Error}", key, error.ErrorMessage);
-                    }
-                }
-            }
-
-            return View(hangHoa);
+                new SelectListItem { Value = "1000", Text = "1000 - Iphone" },
+                new SelectListItem { Value = "1001", Text = "1001 - SamSung" },
+                new SelectListItem { Value = "1002", Text = "1002 - Oppo" },
+                new SelectListItem { Value = "1003", Text = "1003 - Xiaomi" },
+                new SelectListItem { Value = "1004", Text = "1004 - Vivo" },
+                new SelectListItem { Value = "1005", Text = "1005 - Realme" },
+                new SelectListItem { Value = "1006", Text = "1006 - Honor" },
+                new SelectListItem { Value = "1007", Text = "1007 - Laptop" },
+                new SelectListItem { Value = "1008", Text = "1008 - Phụ Kiện" }
+            };
         }
 
         // Hàm lấy danh sách nhà cung cấp

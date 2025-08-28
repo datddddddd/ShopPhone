@@ -102,67 +102,89 @@ namespace ShopPhone.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemVaoGio([FromBody] ThemVaoGioModel model)
         {
-            // Kiểm tra đăng nhập
-            if (!User.Identity.IsAuthenticated)
+            try
             {
-                return Json(new { success = false, message = "Bạn cần đăng nhập." });
-            }
-
-            var userName = User.Identity.Name;
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userName))
-            {
-                return Json(new { success = false, message = "Lỗi xác thực người dùng." });
-            }
-
-            // ✔ Tìm giỏ hàng theo userId chứ KHÔNG chỉ theo userName
-            var gioHang = await _context.GioHangDb.FirstOrDefaultAsync(x => x.MaNguoiDung == userId);
-
-            if (gioHang == null)
-            {
-                gioHang = new GioHangDb
+                // Kiểm tra đăng nhập
+                if (!User.Identity.IsAuthenticated)
                 {
-                    MaNguoiDung = userId,      // ✔ Thêm dòng này
-                    TenDangNhap = userName,   // ✔ Cũng giữ dòng này nếu bạn vẫn hiển thị tên
-                    NgayTao = DateTime.Now
-                };
-                _context.GioHangDb.Add(gioHang);
+                    return Json(new { success = false, message = "Bạn cần đăng nhập." });
+                }
+
+                // Validate model
+                if (model == null || model.MaHH <= 0 || model.SoLuong <= 0)
+                {
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ." });
+                }
+
+                var userName = User.Identity.Name;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userName))
+                {
+                    return Json(new { success = false, message = "Lỗi xác thực người dùng." });
+                }
+
+                // ✔ Tìm giỏ hàng theo userId chứ KHÔNG chỉ theo userName
+                var gioHang = await _context.GioHangDb.FirstOrDefaultAsync(x => x.MaNguoiDung == userId);
+
+                if (gioHang == null)
+                {
+                    // Tạo giỏ hàng mới
+                    gioHang = new GioHangDb
+                    {
+                        MaNguoiDung = userId,
+                        TenDangNhap = userName,
+                        NgayTao = DateTime.Now
+                    };
+                    _context.GioHangDb.Add(gioHang);
+                    await _context.SaveChangesAsync();
+
+                    // Log để debug
+                    Console.WriteLine($"Đã tạo giỏ hàng mới cho user {userId}");
+                }
+
+                var chiTiet = await _context.GioHangChiTietDb
+                    .FirstOrDefaultAsync(x =>
+        x.GioHangDbId == gioHang.Id &&
+        x.MaHH == model.MaHH &&
+        x.BaoHanh1 == model.BaoHanh1 &&
+        x.BaoHanh2 == model.BaoHanh2
+        );
+
+                if (chiTiet != null)
+                {
+                    chiTiet.SoLuong += model.SoLuong;
+                    chiTiet.BaoHanh1 = model.BaoHanh1;
+                    chiTiet.BaoHanh2 = model.BaoHanh2;
+                }
+                else
+                {
+                    var hang = await _context.HangHoa.FindAsync(model.MaHH);
+                    if (hang == null)
+                    {
+                        return Json(new { success = false, message = "Sản phẩm không tồn tại!" });
+                    }
+
+                    chiTiet = new GioHangChiTietDb
+                    {
+                        GioHangDbId = gioHang.Id,
+                        MaHH = model.MaHH,
+                        SoLuong = model.SoLuong,
+                        DonGia = hang.DonGia ?? 0,
+                        GiamGia = 0,
+                        BaoHanh1 = model.BaoHanh1,
+                        BaoHanh2 = model.BaoHanh2
+                    };
+                    _context.GioHangChiTietDb.Add(chiTiet);
+                }
+
                 await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Đã thêm vào giỏ hàng!" });
             }
-
-            var chiTiet = await _context.GioHangChiTietDb
-                .FirstOrDefaultAsync(x =>
-    x.GioHangDbId == gioHang.Id &&
-    x.MaHH == model.MaHH &&
-    x.BaoHanh1 == model.BaoHanh1 &&
-    x.BaoHanh2 == model.BaoHanh2
-    );
-
-            if (chiTiet != null)
+            catch (Exception ex)
             {
-                chiTiet.SoLuong += model.SoLuong;
-                chiTiet.BaoHanh1 = model.BaoHanh1;
-                chiTiet.BaoHanh2 = model.BaoHanh2;
+                return Json(new { success = false, message = "Có lỗi xảy ra khi thêm sản phẩm: " + ex.Message });
             }
-            else
-            {
-                var hang = await _context.HangHoa.FindAsync(model.MaHH);
-                chiTiet = new GioHangChiTietDb
-                {
-                    GioHangDbId = gioHang.Id,
-                    MaHH = model.MaHH,
-                    SoLuong = model.SoLuong,
-                    DonGia = hang.DonGia ?? 0,
-                    GiamGia = 0,
-                    BaoHanh1 = model.BaoHanh1,
-                    BaoHanh2 = model.BaoHanh2
-                };
-                _context.GioHangChiTietDb.Add(chiTiet);
-            }
-
-            await _context.SaveChangesAsync();
-            return Json(new { success = true, message = "Đã thêm vào giỏ hàng!" });
         }
 
         [HttpPost]
@@ -302,9 +324,16 @@ namespace ShopPhone.Controllers
                 }
             }
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index");
+            try
+            {
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Loi"] = "Có lỗi xảy ra khi thêm sản phẩm: " + ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost]

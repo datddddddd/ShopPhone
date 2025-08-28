@@ -249,7 +249,12 @@ else
                 'Content-Type': 'application/json',
                 'RequestVerificationToken': token
             },
-            body: JSON.stringify({ maHH: maHH, soLuong: 1 })
+            body: JSON.stringify({
+                maHH: maHH,
+                soLuong: 1,
+                baoHanh1: false,
+                baoHanh2: false
+            })
         })
         .then(res => res.json())
         .then(data => {
